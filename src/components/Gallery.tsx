@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, AlertCircle } from 'lucide-react';
 
 interface Photo {
   id: number;
@@ -51,6 +52,7 @@ const photos: Photo[] = [
 const Gallery: React.FC = () => {
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
+  const [errorImages, setErrorImages] = useState<Set<number>>(new Set());
 
   const handlePhotoClick = (photo: Photo) => {
     setSelectedPhoto(photo);
@@ -62,6 +64,22 @@ const Gallery: React.FC = () => {
 
   const handleImageLoad = (id: number) => {
     setLoadedImages(prev => new Set(prev).add(id));
+    // If it was previously marked as error, remove it
+    if (errorImages.has(id)) {
+      const newErrorSet = new Set(errorImages);
+      newErrorSet.delete(id);
+      setErrorImages(newErrorSet);
+    }
+  };
+
+  const handleImageError = (id: number) => {
+    // Mark this image as having an error
+    setErrorImages(prev => new Set(prev).add(id));
+    // Ensure it's not in loaded images
+    const newLoadedSet = new Set(loadedImages);
+    newLoadedSet.delete(id);
+    setLoadedImages(newLoadedSet);
+    console.error(`Failed to load image with id ${id}`);
   };
 
   const navigatePhoto = (direction: 'next' | 'prev') => {
@@ -130,17 +148,27 @@ const Gallery: React.FC = () => {
               onClick={() => handlePhotoClick(photo)}
             >
               <div className="overflow-hidden h-[300px] relative">
-                {!loadedImages.has(photo.id) && (
+                {!loadedImages.has(photo.id) && !errorImages.has(photo.id) && (
                   <div className="absolute inset-0 image-loading"></div>
                 )}
-                <img
-                  src={photo.src}
-                  alt={photo.alt}
-                  className={`w-full h-full object-cover transition-transform duration-700 hover:scale-110 ${
-                    loadedImages.has(photo.id) ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  onLoad={() => handleImageLoad(photo.id)}
-                />
+                
+                {errorImages.has(photo.id) ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-cream-50 p-4 text-center">
+                    <AlertCircle className="h-12 w-12 text-romantic-400 mb-2" />
+                    <p className="text-romantic-700 font-medium">Image couldn't be loaded</p>
+                    <p className="text-sm text-romantic-500 mt-1">{photo.alt}</p>
+                  </div>
+                ) : (
+                  <img
+                    src={photo.src}
+                    alt={photo.alt}
+                    className={`w-full h-full object-cover transition-transform duration-700 hover:scale-110 ${
+                      loadedImages.has(photo.id) ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    onLoad={() => handleImageLoad(photo.id)}
+                    onError={() => handleImageError(photo.id)}
+                  />
+                )}
               </div>
               <div className="p-4">
                 <p className="font-handwriting text-lg text-romantic-700">{photo.caption}</p>
@@ -174,12 +202,21 @@ const Gallery: React.FC = () => {
                 <X size={20} />
               </button>
               
-              <div className="h-[70vh] bg-gray-100">
-                <img 
-                  src={selectedPhoto.src} 
-                  alt={selectedPhoto.alt} 
-                  className="w-full h-full object-contain"
-                />
+              <div className="h-[70vh] bg-gray-100 relative">
+                {errorImages.has(selectedPhoto.id) ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-cream-50 p-4 text-center">
+                    <AlertCircle className="h-16 w-16 text-romantic-400 mb-4" />
+                    <p className="text-romantic-700 text-xl font-medium">Image couldn't be loaded</p>
+                    <p className="text-romantic-500 mt-1">{selectedPhoto.alt}</p>
+                  </div>
+                ) : (
+                  <img 
+                    src={selectedPhoto.src} 
+                    alt={selectedPhoto.alt} 
+                    className="w-full h-full object-contain"
+                    onError={() => handleImageError(selectedPhoto.id)}
+                  />
+                )}
               </div>
               
               <div className="p-6 bg-white">
