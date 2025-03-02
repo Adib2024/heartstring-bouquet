@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
@@ -13,30 +12,36 @@ interface Photo {
 const photos: Photo[] = [
   {
     id: 1,
+    src: '/lovable-uploads/400effcd-ba0d-4daf-a9d9-074cb3b72409.png',
+    alt: 'Holding hands together',
+    caption: 'When our hands intertwine, I feel complete'
+  },
+  {
+    id: 2,
     src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
     alt: 'Serene landscape with mountains and water',
     caption: 'The place where we first said "I love you"'
   },
   {
-    id: 2,
+    id: 3,
     src: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07',
     alt: 'Beautiful orange flowers in bloom',
     caption: 'Remember when you surprised me with these flowers?'
   },
   {
-    id: 3,
+    id: 4,
     src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
     alt: 'Cozy moment working together',
     caption: 'Our quiet moments mean everything to me'
   },
   {
-    id: 4,
+    id: 5,
     src: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04',
     alt: 'A cozy living room',
     caption: 'Building our home together, one memory at a time'
   },
   {
-    id: 5,
+    id: 6,
     src: 'https://images.unsplash.com/photo-1582562124811-c09040d0a901',
     alt: 'Our furry friend',
     caption: 'Our little family member who brings us so much joy'
@@ -74,7 +79,6 @@ const Gallery: React.FC = () => {
     setSelectedPhoto(photos[newIndex]);
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -146,7 +150,6 @@ const Gallery: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Lightbox Modal */}
       <AnimatePresence>
         {selectedPhoto && (
           <motion.div 
