@@ -1,0 +1,213 @@
+
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+
+interface Photo {
+  id: number;
+  src: string;
+  alt: string;
+  caption: string;
+}
+
+const photos: Photo[] = [
+  {
+    id: 1,
+    src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
+    alt: 'Serene landscape with mountains and water',
+    caption: 'The place where we first said "I love you"'
+  },
+  {
+    id: 2,
+    src: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07',
+    alt: 'Beautiful orange flowers in bloom',
+    caption: 'Remember when you surprised me with these flowers?'
+  },
+  {
+    id: 3,
+    src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
+    alt: 'Cozy moment working together',
+    caption: 'Our quiet moments mean everything to me'
+  },
+  {
+    id: 4,
+    src: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04',
+    alt: 'A cozy living room',
+    caption: 'Building our home together, one memory at a time'
+  },
+  {
+    id: 5,
+    src: 'https://images.unsplash.com/photo-1582562124811-c09040d0a901',
+    alt: 'Our furry friend',
+    caption: 'Our little family member who brings us so much joy'
+  }
+];
+
+const Gallery: React.FC = () => {
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
+
+  const handlePhotoClick = (photo: Photo) => {
+    setSelectedPhoto(photo);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedPhoto(null);
+  };
+
+  const handleImageLoad = (id: number) => {
+    setLoadedImages(prev => new Set(prev).add(id));
+  };
+
+  const navigatePhoto = (direction: 'next' | 'prev') => {
+    if (!selectedPhoto) return;
+    
+    const currentIndex = photos.findIndex(photo => photo.id === selectedPhoto.id);
+    let newIndex;
+    
+    if (direction === 'next') {
+      newIndex = (currentIndex + 1) % photos.length;
+    } else {
+      newIndex = (currentIndex - 1 + photos.length) % photos.length;
+    }
+    
+    setSelectedPhoto(photos[newIndex]);
+  };
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 }
+    }
+  };
+
+  return (
+    <section id="gallery" className="py-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <span className="inline-block py-1 px-3 rounded-full text-xs bg-cream-100 text-cream-800 mb-4">
+            Our Memories
+          </span>
+          <h2 className="text-4xl font-serif font-bold text-romantic-900 mb-6">
+            Moments Worth <span className="text-cream-600">Remembering</span>
+          </h2>
+          <p className="max-w-2xl mx-auto text-romantic-700">
+            Each photo captures a moment, a feeling, a memory that we've created together. 
+            These are the fragments of our story that I hold closest to my heart.
+          </p>
+        </div>
+        
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          {photos.map((photo) => (
+            <motion.div 
+              key={photo.id}
+              className="overflow-hidden rounded-xl hover-lift glass-card"
+              variants={itemVariants}
+              onClick={() => handlePhotoClick(photo)}
+            >
+              <div className="overflow-hidden h-[300px] relative">
+                {!loadedImages.has(photo.id) && (
+                  <div className="absolute inset-0 image-loading"></div>
+                )}
+                <img
+                  src={photo.src}
+                  alt={photo.alt}
+                  className={`w-full h-full object-cover transition-transform duration-700 hover:scale-110 ${
+                    loadedImages.has(photo.id) ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  onLoad={() => handleImageLoad(photo.id)}
+                />
+              </div>
+              <div className="p-4">
+                <p className="font-handwriting text-lg text-romantic-700">{photo.caption}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {selectedPhoto && (
+          <motion.div 
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleCloseModal}
+          >
+            <motion.div 
+              className="relative max-w-5xl max-h-[90vh] bg-white rounded-xl overflow-hidden"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                className="absolute top-3 right-3 z-10 p-2 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-colors"
+                onClick={handleCloseModal}
+              >
+                <X size={20} />
+              </button>
+              
+              <div className="h-[70vh] bg-gray-100">
+                <img 
+                  src={selectedPhoto.src} 
+                  alt={selectedPhoto.alt} 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              
+              <div className="p-6 bg-white">
+                <p className="font-handwriting text-xl text-romantic-700 mb-2">{selectedPhoto.caption}</p>
+              </div>
+              
+              <button 
+                className="absolute top-1/2 left-4 transform -translate-y-1/2 p-3 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigatePhoto('prev');
+                }}
+              >
+                <ChevronLeft size={24} />
+              </button>
+              
+              <button 
+                className="absolute top-1/2 right-4 transform -translate-y-1/2 p-3 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigatePhoto('next');
+                }}
+              >
+                <ChevronRight size={24} />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
+  );
+};
+
+export default Gallery;
