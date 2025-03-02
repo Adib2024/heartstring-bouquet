@@ -111,6 +111,10 @@
   background: linear-gradient(135deg, #ffdee2 0%, #fdf2f4 100%);
 }
 
+.cream-gradient {
+  background: linear-gradient(135deg, #fef7ee 0%, #fff9f0 100%);
+}
+
 .letter-background {
   background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
                     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
@@ -127,12 +131,11 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(246, 134, 166, 0.5);
-  border-radius: 10px;
+  background: rgba(239, 174, 107, 0.5);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(246, 134, 166, 0.8);
+  background: rgba(239, 174, 107, 0.8);
 }
 
 /* Custom animations */

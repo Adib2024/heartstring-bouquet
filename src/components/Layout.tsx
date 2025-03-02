@@ -9,7 +9,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="romantic-gradient min-h-screen">
+    <div className="cream-gradient min-h-screen">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-20">
         <Navigation />
         <motion.main 
@@ -20,9 +20,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         >
           {children}
         </motion.main>
-        <footer className="text-center pt-10 pb-6 text-romantic-300">
+        <footer className="text-center pt-10 pb-6 text-cream-700">
           <div className="flex flex-col items-center justify-center space-y-2">
-            <div className="h-px w-24 bg-romantic-200 my-4"></div>
+            <div className="h-px w-24 bg-cream-300 my-4"></div>
             <p className="text-sm font-light">Created with love</p>
             <p className="text-xs font-light opacity-70">© {new Date().getFullYear()}</p>
           </div>
