@@ -17,12 +17,24 @@ const Index: React.FC = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <Hero />
-        <Gallery />
-        <Messages />
-        <Playlist />
-        <Surprise />
-        <Contact />
+        <section id="hero">
+          <Hero />
+        </section>
+        <section id="gallery">
+          <Gallery />
+        </section>
+        <section id="messages">
+          <Messages />
+        </section>
+        <section id="playlist">
+          <Playlist />
+        </section>
+        <section id="surprise">
+          <Surprise />
+        </section>
+        <section id="contact">
+          <Contact />
+        </section>
       </motion.div>
     </Layout>
   );

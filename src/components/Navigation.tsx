@@ -7,6 +7,7 @@ import { Heart } from 'lucide-react';
 const Navigation: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const [activeSection, setActiveSection] = useState('hero');
 
   // Handle scroll effect
   useEffect(() => {
@@ -16,6 +17,19 @@ const Navigation: React.FC = () => {
       } else {
         setIsScrolled(false);
       }
+
+      // Determine active section based on scroll position
+      const sections = ['hero', 'gallery', 'messages', 'playlist', 'contact'];
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= 100 && rect.bottom >= 100) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -23,12 +37,20 @@ const Navigation: React.FC = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Home', path: '/#hero' },
-    { name: 'Gallery', path: '/#gallery' },
-    { name: 'Messages', path: '/#messages' },
-    { name: 'Playlist', path: '/#playlist' },
-    { name: 'Contact', path: '/#contact' },
+    { name: 'Home', path: '/#hero', section: 'hero' },
+    { name: 'Gallery', path: '/#gallery', section: 'gallery' },
+    { name: 'Messages', path: '/#messages', section: 'messages' },
+    { name: 'Playlist', path: '/#playlist', section: 'playlist' },
+    { name: 'Contact', path: '/#contact', section: 'contact' },
   ];
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      // Use smooth scrolling behavior
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <motion.header
@@ -46,7 +68,16 @@ const Navigation: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Link to="/" className="flex items-center space-x-2">
+            <Link 
+              to="/" 
+              className="flex items-center space-x-2"
+              onClick={(e) => {
+                if (location.pathname === '/') {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+            >
               <Heart className="h-6 w-6 text-romantic-500" fill="#f686a6" />
               <span className="text-romantic-900 font-serif text-xl font-medium">For You</span>
             </Link>
@@ -57,8 +88,13 @@ const Navigation: React.FC = () => {
               <NavLink 
                 key={link.name} 
                 to={link.path} 
-                isActive={location.hash === link.path.split('#')[1] || 
-                          (location.pathname === '/' && link.path === '/#hero' && !location.hash)}
+                isActive={activeSection === link.section}
+                onClick={(e) => {
+                  if (location.pathname === '/') {
+                    e.preventDefault();
+                    scrollToSection(link.section);
+                  }
+                }}
               >
                 {link.name}
               </NavLink>
@@ -78,7 +114,7 @@ const Navigation: React.FC = () => {
           </nav>
           
           <div className="md:hidden">
-            <MobileMenu links={navLinks} />
+            <MobileMenu links={navLinks} scrollToSection={scrollToSection} />
           </div>
         </div>
       </div>
@@ -87,10 +123,16 @@ const Navigation: React.FC = () => {
 };
 
 // NavLink component for desktop navigation
-const NavLink: React.FC<{ to: string; isActive: boolean; children: React.ReactNode }> = ({ 
+const NavLink: React.FC<{ 
+  to: string; 
+  isActive: boolean; 
+  children: React.ReactNode;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+}> = ({ 
   to, 
   isActive, 
-  children 
+  children,
+  onClick
 }) => {
   return (
     <Link
@@ -100,6 +142,7 @@ const NavLink: React.FC<{ to: string; isActive: boolean; children: React.ReactNo
           ? 'text-romantic-500' 
           : 'text-romantic-900 hover:text-romantic-500'
       }`}
+      onClick={onClick}
     >
       {children}
       {isActive && (
@@ -115,8 +158,12 @@ const NavLink: React.FC<{ to: string; isActive: boolean; children: React.ReactNo
 };
 
 // Mobile menu component
-const MobileMenu: React.FC<{ links: { name: string; path: string }[] }> = ({ links }) => {
+const MobileMenu: React.FC<{ 
+  links: { name: string; path: string; section: string }[]; 
+  scrollToSection: (sectionId: string) => void;
+}> = ({ links, scrollToSection }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
   
   return (
     <div>
@@ -152,7 +199,13 @@ const MobileMenu: React.FC<{ links: { name: string; path: string }[] }> = ({ lin
                 key={link.name}
                 to={link.path}
                 className="px-4 py-3 text-romantic-800 hover:text-romantic-500 hover:bg-romantic-50 rounded-md text-sm font-medium"
-                onClick={() => setIsOpen(false)}
+                onClick={(e) => {
+                  if (location.pathname === '/') {
+                    e.preventDefault();
+                    scrollToSection(link.section);
+                  }
+                  setIsOpen(false);
+                }}
               >
                 {link.name}
               </Link>
