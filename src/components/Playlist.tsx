@@ -1,7 +1,8 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, SkipForward, SkipBack, Music } from 'lucide-react';
+import { toast } from "sonner";
 
 interface Song {
   id: number;
@@ -55,20 +56,63 @@ const Playlist: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Initialize audio element
+  useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+      
+      // Set up event listeners
+      audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
+      audioRef.current.addEventListener('ended', handleEnded);
+      audioRef.current.addEventListener('error', handleAudioError);
+    }
+    
+    // Clean up on component unmount
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.removeEventListener('timeupdate', handleTimeUpdate);
+        audioRef.current.removeEventListener('ended', handleEnded);
+        audioRef.current.removeEventListener('error', handleAudioError);
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  const handleAudioError = (e: Event) => {
+    console.error('Audio playback error:', e);
+    toast.error(`Couldn't play "${currentSong?.title}". Please try another song.`);
+    setIsPlaying(false);
+  };
+
   const playSong = (song: Song) => {
     if (currentSong?.id === song.id) {
       if (isPlaying) {
         audioRef.current?.pause();
       } else {
-        audioRef.current?.play();
+        const playPromise = audioRef.current?.play();
+        if (playPromise) {
+          playPromise.catch(error => {
+            console.error('Play promise error:', error);
+            toast.error('Playback blocked. Click again to try playing.');
+          });
+        }
       }
       setIsPlaying(!isPlaying);
     } else {
       setCurrentSong(song);
       setIsPlaying(true);
+      
       if (audioRef.current) {
         audioRef.current.src = song.src;
-        audioRef.current.play();
+        const playPromise = audioRef.current.play();
+        if (playPromise) {
+          playPromise.catch(error => {
+            console.error('Play promise error on new song:', error);
+            toast.error(`Couldn't play "${song.title}". Please try again or select another song.`);
+            setIsPlaying(false);
+          });
+        }
       }
     }
   };
@@ -239,13 +283,6 @@ const Playlist: React.FC = () => {
                   <SkipForward className="w-5 h-5" />
                 </button>
               </div>
-              
-              <audio 
-                ref={audioRef}
-                onTimeUpdate={handleTimeUpdate}
-                onEnded={handleEnded}
-                className="hidden"
-              />
             </div>
           </motion.div>
           

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Layout from '@/components/Layout';
 import Hero from '@/components/Hero';
 import Gallery from '@/components/Gallery';
@@ -10,6 +10,20 @@ import Contact from '@/components/Contact';
 import { motion } from 'framer-motion';
 
 const Index: React.FC = () => {
+  // Scroll to the section specified in the URL hash on initial load
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const id = hash.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, []);
+
   return (
     <Layout>
       <motion.div
