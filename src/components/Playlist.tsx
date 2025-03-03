@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, SkipForward, SkipBack, Music } from 'lucide-react';
@@ -18,35 +17,35 @@ const songs: Song[] = [
     title: "Perfect",
     artist: "Ed Sheeran",
     description: "The song that reminds me of our first dance",
-    src: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/db/e4/64/dbe464c7-6ebb-ed0c-098f-4dbbce3c1bff/mzaf_5490990465541537168.plus.aac.p.m4a"
+    src: "https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3"
   },
   {
     id: 2,
     title: "All of Me",
     artist: "John Legend",
     description: "This describes exactly how I feel about you",
-    src: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/2e/e0/87/2ee087e4-3d3a-7557-92a3-15b7026b212e/mzaf_9335390342361255150.plus.aac.p.m4a"
+    src: "https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3"
   },
   {
     id: 3,
     title: "Thinking Out Loud",
     artist: "Ed Sheeran",
     description: "Forever's not long enough with you",
-    src: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/72/c5/96/72c596bb-6736-5c35-73dd-96871e67b615/mzaf_14139585736370609347.plus.aac.p.m4a"
+    src: "https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3"
   },
   {
     id: 4,
     title: "At Last",
     artist: "Etta James",
     description: "A classic that makes me think of you",
-    src: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/d4/c6/2f/d4c62f2c-c95c-ee30-d972-8269a3a9863c/mzaf_7464797961417965814.plus.aac.p.m4a"
+    src: "https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3"
   },
   {
     id: 5,
     title: "Can't Help Falling In Love",
     artist: "Elvis Presley",
     description: "Because some things are meant to be",
-    src: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/1e/57/c5/1e57c5dd-1870-33c0-f57d-7d65dc6e5c10/mzaf_17008413248041611436.plus.aac.p.m4a"
+    src: "https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3"
   }
 ];
 
@@ -56,18 +55,17 @@ const Playlist: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Initialize audio element
   useEffect(() => {
     if (!audioRef.current) {
       audioRef.current = new Audio();
       
-      // Set up event listeners
       audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
       audioRef.current.addEventListener('ended', handleEnded);
       audioRef.current.addEventListener('error', handleAudioError);
+      
+      audioRef.current.preload = 'auto';
     }
     
-    // Clean up on component unmount
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -89,29 +87,43 @@ const Playlist: React.FC = () => {
     if (currentSong?.id === song.id) {
       if (isPlaying) {
         audioRef.current?.pause();
+        setIsPlaying(false);
       } else {
-        const playPromise = audioRef.current?.play();
-        if (playPromise) {
-          playPromise.catch(error => {
-            console.error('Play promise error:', error);
-            toast.error('Playback blocked. Click again to try playing.');
-          });
+        if (audioRef.current) {
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                setIsPlaying(true);
+              })
+              .catch(error => {
+                console.error('Play promise error:', error);
+                toast.error('Playback blocked. Try clicking again.');
+                setIsPlaying(false);
+              });
+          }
         }
       }
-      setIsPlaying(!isPlaying);
     } else {
       setCurrentSong(song);
-      setIsPlaying(true);
       
       if (audioRef.current) {
+        audioRef.current.pause();
         audioRef.current.src = song.src;
+        audioRef.current.load();
+        
         const playPromise = audioRef.current.play();
-        if (playPromise) {
-          playPromise.catch(error => {
-            console.error('Play promise error on new song:', error);
-            toast.error(`Couldn't play "${song.title}". Please try again or select another song.`);
-            setIsPlaying(false);
-          });
+        
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setIsPlaying(true);
+            })
+            .catch(error => {
+              console.error('Play promise error on new song:', error);
+              toast.error(`Couldn't play "${song.title}". Try again or select another song.`);
+              setIsPlaying(false);
+            });
         }
       }
     }
@@ -160,7 +172,6 @@ const Playlist: React.FC = () => {
     handleNext();
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
