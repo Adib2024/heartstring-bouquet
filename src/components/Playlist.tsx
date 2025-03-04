@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, SkipForward, SkipBack, Music, Volume2, VolumeX } from 'lucide-react';
@@ -109,7 +108,6 @@ const Playlist: React.FC = () => {
     console.error("YouTube player error:", event.data);
     toast.error("Failed to play the song. Trying the next one...");
     
-    // When a video fails, try the next one
     setTimeout(() => {
       handleNext();
     }, 1000);
@@ -148,10 +146,14 @@ const Playlist: React.FC = () => {
         if (isPlaying) {
           playerRef.current?.pauseVideo();
         } else {
+          if (playerRef.current) {
+            playerRef.current.seekTo(0, true);
+          }
           playerRef.current?.playVideo();
         }
       } else {
         setCurrentSong(song);
+        setProgress(0);
         
         if (playerRef.current && playerReady) {
           playerRef.current.loadVideoById({
@@ -161,7 +163,6 @@ const Playlist: React.FC = () => {
           playerRef.current.playVideo();
         } else {
           setIsPlaying(true);
-          // If player isn't ready yet, we'll play when it's ready via the effect
           toast.info("Preparing your song...");
         }
       }
@@ -171,7 +172,6 @@ const Playlist: React.FC = () => {
     }
   };
 
-  // Effect to play song when currentSong changes and player becomes ready
   useEffect(() => {
     if (currentSong && playerRef.current && playerReady && isPlaying) {
       try {
@@ -188,7 +188,6 @@ const Playlist: React.FC = () => {
 
   const handleNext = () => {
     if (!currentSong) {
-      // If no song is playing, play the first one
       playSong(songs[0]);
       return;
     }
@@ -200,7 +199,6 @@ const Playlist: React.FC = () => {
 
   const handlePrev = () => {
     if (!currentSong) {
-      // If no song is playing, play the last one
       playSong(songs[songs.length - 1]);
       return;
     }
