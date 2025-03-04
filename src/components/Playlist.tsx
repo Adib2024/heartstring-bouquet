@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, SkipForward, SkipBack, Music, Volume2, VolumeX } from 'lucide-react';
@@ -18,35 +19,35 @@ const songs: Song[] = [
     title: "Perfect",
     artist: "Ed Sheeran",
     description: "The song that reminds me of our first dance",
-    videoId: "cNGjD0VG4R8"
+    videoId: "2Vv-BfVoq4g"
   },
   {
     id: 2,
     title: "All of Me",
     artist: "John Legend",
     description: "This describes exactly how I feel about you",
-    videoId: "ngq5Aw0Q6rQ"
+    videoId: "450p7goxZqg"
   },
   {
     id: 3,
     title: "Thinking Out Loud",
     artist: "Ed Sheeran",
     description: "Forever's not long enough with you",
-    videoId: "s6jDsbz0DQw"
+    videoId: "lp-EO5I60KA"
   },
   {
     id: 4,
     title: "At Last",
     artist: "Etta James",
     description: "A classic that makes me think of you",
-    videoId: "YtZ-IgUjALo"
+    videoId: "S-cbOl96RFM"
   },
   {
     id: 5,
     title: "Can't Help Falling In Love",
     artist: "Elvis Presley",
     description: "Because some things are meant to be",
-    videoId: "MqazV4hbu8E"
+    videoId: "vGJTaP6anOU"
   }
 ];
 
@@ -57,6 +58,7 @@ const Playlist: React.FC = () => {
   const [isMuted, setIsMuted] = useState(false);
   const playerRef = useRef<YouTubePlayer | null>(null);
   const progressIntervalRef = useRef<number | null>(null);
+  const [playerReady, setPlayerReady] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -68,28 +70,49 @@ const Playlist: React.FC = () => {
 
   const onPlayerReady = (event: YouTubeEvent) => {
     playerRef.current = event.target;
+    setPlayerReady(true);
     
-    playerRef.current.setVolume(50);
+    try {
+      playerRef.current.setVolume(50);
 
-    if (currentSong && isPlaying) {
-      event.target.playVideo();
+      if (currentSong && isPlaying) {
+        event.target.playVideo();
+      }
+    } catch (error) {
+      console.error("Player ready error:", error);
+      toast.error("Failed to setup music player");
     }
   };
 
   const onPlayerStateChange = (event: YouTubeEvent) => {
-    const playerState = event.data;
-    
-    if (playerState === 1) {
-      setIsPlaying(true);
-      startProgressInterval();
-    } else if (playerState === 2) {
-      setIsPlaying(false);
-      stopProgressInterval();
-    } else if (playerState === 0) {
-      handleNext();
-    } else if (playerState === 3) {
-      stopProgressInterval();
+    try {
+      const playerState = event.data;
+      
+      if (playerState === 1) {
+        setIsPlaying(true);
+        startProgressInterval();
+        toast.success(`Now playing: ${currentSong?.title} by ${currentSong?.artist}`);
+      } else if (playerState === 2) {
+        setIsPlaying(false);
+        stopProgressInterval();
+      } else if (playerState === 0) {
+        handleNext();
+      } else if (playerState === 3) {
+        stopProgressInterval();
+      }
+    } catch (error) {
+      console.error("Player state change error:", error);
     }
+  };
+
+  const onPlayerError = (event: YouTubeEvent) => {
+    console.error("YouTube player error:", event.data);
+    toast.error("Failed to play the song. Trying the next one...");
+    
+    // When a video fails, try the next one
+    setTimeout(() => {
+      handleNext();
+    }, 1000);
   };
 
   const startProgressInterval = () => {
@@ -97,11 +120,16 @@ const Playlist: React.FC = () => {
     
     progressIntervalRef.current = window.setInterval(() => {
       if (playerRef.current) {
-        const duration = playerRef.current.getDuration();
-        const currentTime = playerRef.current.getCurrentTime();
-        
-        if (duration) {
-          setProgress((currentTime / duration) * 100);
+        try {
+          const duration = playerRef.current.getDuration();
+          const currentTime = playerRef.current.getCurrentTime();
+          
+          if (duration) {
+            setProgress((currentTime / duration) * 100);
+          }
+        } catch (error) {
+          console.error("Progress update error:", error);
+          stopProgressInterval();
         }
       }
     }, 1000);
@@ -115,36 +143,68 @@ const Playlist: React.FC = () => {
   };
 
   const playSong = (song: Song) => {
-    if (currentSong?.id === song.id) {
-      if (isPlaying) {
-        playerRef.current?.pauseVideo();
+    try {
+      if (currentSong?.id === song.id) {
+        if (isPlaying) {
+          playerRef.current?.pauseVideo();
+        } else {
+          playerRef.current?.playVideo();
+        }
       } else {
-        playerRef.current?.playVideo();
+        setCurrentSong(song);
+        
+        if (playerRef.current && playerReady) {
+          playerRef.current.loadVideoById({
+            videoId: song.videoId,
+            startSeconds: 0
+          });
+          playerRef.current.playVideo();
+        } else {
+          setIsPlaying(true);
+          // If player isn't ready yet, we'll play when it's ready via the effect
+          toast.info("Preparing your song...");
+        }
       }
-    } else {
-      setCurrentSong(song);
-      
-      if (playerRef.current) {
-        playerRef.current.loadVideoById({
-          videoId: song.videoId,
-          startSeconds: 0
-        });
-        playerRef.current.playVideo();
-      } else {
-        setIsPlaying(true);
-      }
+    } catch (error) {
+      console.error("Play song error:", error);
+      toast.error("Failed to play the song");
     }
   };
 
+  // Effect to play song when currentSong changes and player becomes ready
+  useEffect(() => {
+    if (currentSong && playerRef.current && playerReady && isPlaying) {
+      try {
+        playerRef.current.loadVideoById({
+          videoId: currentSong.videoId,
+          startSeconds: 0
+        });
+        playerRef.current.playVideo();
+      } catch (error) {
+        console.error("Auto-play error:", error);
+      }
+    }
+  }, [currentSong, playerReady]);
+
   const handleNext = () => {
-    if (!currentSong) return;
+    if (!currentSong) {
+      // If no song is playing, play the first one
+      playSong(songs[0]);
+      return;
+    }
+    
     const currentIndex = songs.findIndex(song => song.id === currentSong.id);
     const nextIndex = (currentIndex + 1) % songs.length;
     playSong(songs[nextIndex]);
   };
 
   const handlePrev = () => {
-    if (!currentSong) return;
+    if (!currentSong) {
+      // If no song is playing, play the last one
+      playSong(songs[songs.length - 1]);
+      return;
+    }
+    
     const currentIndex = songs.findIndex(song => song.id === currentSong.id);
     const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
     playSong(songs[prevIndex]);
@@ -153,30 +213,40 @@ const Playlist: React.FC = () => {
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!playerRef.current || !currentSong) return;
     
-    const progressBar = e.currentTarget;
-    const rect = progressBar.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const width = rect.width;
-    
-    const percentage = (x / width) * 100;
-    
-    setProgress(percentage);
-    
-    const duration = playerRef.current.getDuration();
-    const seekToTime = (percentage / 100) * duration;
-    
-    playerRef.current.seekTo(seekToTime, true);
+    try {
+      const progressBar = e.currentTarget;
+      const rect = progressBar.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const width = rect.width;
+      
+      const percentage = (x / width) * 100;
+      
+      setProgress(percentage);
+      
+      const duration = playerRef.current.getDuration();
+      const seekToTime = (percentage / 100) * duration;
+      
+      playerRef.current.seekTo(seekToTime, true);
+    } catch (error) {
+      console.error("Progress click error:", error);
+    }
   };
 
   const toggleMute = () => {
     if (!playerRef.current) return;
     
-    if (isMuted) {
-      playerRef.current.unMute();
-      setIsMuted(false);
-    } else {
-      playerRef.current.mute();
-      setIsMuted(true);
+    try {
+      if (isMuted) {
+        playerRef.current.unMute();
+        setIsMuted(false);
+        toast.success("Sound on");
+      } else {
+        playerRef.current.mute();
+        setIsMuted(true);
+        toast.success("Sound off");
+      }
+    } catch (error) {
+      console.error("Toggle mute error:", error);
     }
   };
 
@@ -275,14 +345,27 @@ const Playlist: React.FC = () => {
                 )}
               </div>
               
-              <div className="sr-only">
+              <div className="absolute opacity-0 pointer-events-none">
                 {currentSong && (
                   <YouTube
                     videoId={currentSong.videoId}
                     opts={opts}
                     onReady={onPlayerReady}
                     onStateChange={onPlayerStateChange}
+                    onError={onPlayerError}
                     className="hidden"
+                    id="youtube-player"
+                  />
+                )}
+                {!currentSong && (
+                  <YouTube
+                    videoId={songs[0].videoId}
+                    opts={opts}
+                    onReady={onPlayerReady}
+                    onStateChange={onPlayerStateChange}
+                    onError={onPlayerError}
+                    className="hidden"
+                    id="youtube-player-init"
                   />
                 )}
               </div>
@@ -303,15 +386,15 @@ const Playlist: React.FC = () => {
                 <button 
                   onClick={handlePrev}
                   className="p-2 text-romantic-600 hover:text-romantic-800 transition-colors"
-                  disabled={!currentSong}
+                  aria-label="Previous song"
                 >
                   <SkipBack className="w-5 h-5" />
                 </button>
                 
                 <button 
-                  onClick={() => currentSong && playSong(currentSong)}
+                  onClick={() => currentSong ? playSong(currentSong) : handleNext()}
                   className="p-4 bg-romantic-500 text-white rounded-full hover:bg-romantic-600 transition-colors flex items-center justify-center"
-                  disabled={!currentSong}
+                  aria-label={isPlaying ? "Pause" : "Play"}
                 >
                   {isPlaying ? (
                     <Pause className="w-6 h-6" />
@@ -323,7 +406,7 @@ const Playlist: React.FC = () => {
                 <button 
                   onClick={handleNext}
                   className="p-2 text-romantic-600 hover:text-romantic-800 transition-colors"
-                  disabled={!currentSong}
+                  aria-label="Next song"
                 >
                   <SkipForward className="w-5 h-5" />
                 </button>
@@ -331,7 +414,7 @@ const Playlist: React.FC = () => {
                 <button 
                   onClick={toggleMute}
                   className="p-2 text-romantic-600 hover:text-romantic-800 transition-colors"
-                  disabled={!currentSong}
+                  aria-label={isMuted ? "Unmute" : "Mute"}
                 >
                   {isMuted ? (
                     <VolumeX className="w-5 h-5" />
