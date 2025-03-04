@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, SkipForward, SkipBack, Music, Volume2, VolumeX } from 'lucide-react';
@@ -143,17 +144,18 @@ const Playlist: React.FC = () => {
   const playSong = (song: Song) => {
     try {
       if (currentSong?.id === song.id) {
-        if (isPlaying) {
-          playerRef.current?.pauseVideo();
-        } else {
-          if (playerRef.current) {
-            playerRef.current.seekTo(0, true);
-          }
-          playerRef.current?.playVideo();
+        // Even if it's the same song, restart it and make sure it plays
+        setProgress(0);
+        if (playerRef.current) {
+          playerRef.current.seekTo(0, true);
+          playerRef.current.playVideo();
+          setIsPlaying(true);
         }
       } else {
+        // Different song selected
         setCurrentSong(song);
         setProgress(0);
+        setIsPlaying(true);
         
         if (playerRef.current && playerReady) {
           playerRef.current.loadVideoById({
@@ -162,7 +164,6 @@ const Playlist: React.FC = () => {
           });
           playerRef.current.playVideo();
         } else {
-          setIsPlaying(true);
           toast.info("Preparing your song...");
         }
       }
@@ -252,7 +253,7 @@ const Playlist: React.FC = () => {
     height: '1',
     width: '1',
     playerVars: {
-      autoplay: 0,
+      autoplay: 1, // Changed from 0 to 1 to ensure autoplay
       controls: 0,
       disablekb: 1,
       fs: 0,
