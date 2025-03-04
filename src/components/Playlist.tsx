@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Pause, SkipForward, SkipBack, Music } from 'lucide-react';
+import { Play, Pause, SkipForward, SkipBack, Music, Volume2, VolumeX } from 'lucide-react';
 import { toast } from "sonner";
+import YouTube, { YouTubePlayer, YouTubeProps, YouTubeEvent } from 'react-youtube';
 
 interface Song {
   id: number;
   title: string;
   artist: string;
   description: string;
-  src: string;
+  videoId: string;
 }
 
 const songs: Song[] = [
@@ -17,35 +18,35 @@ const songs: Song[] = [
     title: "Perfect",
     artist: "Ed Sheeran",
     description: "The song that reminds me of our first dance",
-    src: "https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3"
+    videoId: "cNGjD0VG4R8"
   },
   {
     id: 2,
     title: "All of Me",
     artist: "John Legend",
     description: "This describes exactly how I feel about you",
-    src: "https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3"
+    videoId: "ngq5Aw0Q6rQ"
   },
   {
     id: 3,
     title: "Thinking Out Loud",
     artist: "Ed Sheeran",
     description: "Forever's not long enough with you",
-    src: "https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3"
+    videoId: "s6jDsbz0DQw"
   },
   {
     id: 4,
     title: "At Last",
     artist: "Etta James",
     description: "A classic that makes me think of you",
-    src: "https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3"
+    videoId: "YtZ-IgUjALo"
   },
   {
     id: 5,
     title: "Can't Help Falling In Love",
     artist: "Elvis Presley",
     description: "Because some things are meant to be",
-    src: "https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3"
+    videoId: "MqazV4hbu8E"
   }
 ];
 
@@ -53,78 +54,84 @@ const Playlist: React.FC = () => {
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isMuted, setIsMuted] = useState(false);
+  const playerRef = useRef<YouTubePlayer | null>(null);
+  const progressIntervalRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-      
-      audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
-      audioRef.current.addEventListener('ended', handleEnded);
-      audioRef.current.addEventListener('error', handleAudioError);
-      
-      audioRef.current.preload = 'auto';
-    }
-    
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.removeEventListener('timeupdate', handleTimeUpdate);
-        audioRef.current.removeEventListener('ended', handleEnded);
-        audioRef.current.removeEventListener('error', handleAudioError);
-        audioRef.current = null;
+      if (progressIntervalRef.current) {
+        window.clearInterval(progressIntervalRef.current);
       }
     };
   }, []);
 
-  const handleAudioError = (e: Event) => {
-    console.error('Audio playback error:', e);
-    toast.error(`Couldn't play "${currentSong?.title}". Please try another song.`);
-    setIsPlaying(false);
+  const onPlayerReady = (event: YouTubeEvent) => {
+    playerRef.current = event.target;
+    
+    playerRef.current.setVolume(50);
+
+    if (currentSong && isPlaying) {
+      event.target.playVideo();
+    }
+  };
+
+  const onPlayerStateChange = (event: YouTubeEvent) => {
+    const playerState = event.data;
+    
+    if (playerState === 1) {
+      setIsPlaying(true);
+      startProgressInterval();
+    } else if (playerState === 2) {
+      setIsPlaying(false);
+      stopProgressInterval();
+    } else if (playerState === 0) {
+      handleNext();
+    } else if (playerState === 3) {
+      stopProgressInterval();
+    }
+  };
+
+  const startProgressInterval = () => {
+    stopProgressInterval();
+    
+    progressIntervalRef.current = window.setInterval(() => {
+      if (playerRef.current) {
+        const duration = playerRef.current.getDuration();
+        const currentTime = playerRef.current.getCurrentTime();
+        
+        if (duration) {
+          setProgress((currentTime / duration) * 100);
+        }
+      }
+    }, 1000);
+  };
+
+  const stopProgressInterval = () => {
+    if (progressIntervalRef.current) {
+      window.clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
   };
 
   const playSong = (song: Song) => {
     if (currentSong?.id === song.id) {
       if (isPlaying) {
-        audioRef.current?.pause();
-        setIsPlaying(false);
+        playerRef.current?.pauseVideo();
       } else {
-        if (audioRef.current) {
-          const playPromise = audioRef.current.play();
-          if (playPromise !== undefined) {
-            playPromise
-              .then(() => {
-                setIsPlaying(true);
-              })
-              .catch(error => {
-                console.error('Play promise error:', error);
-                toast.error('Playback blocked. Try clicking again.');
-                setIsPlaying(false);
-              });
-          }
-        }
+        playerRef.current?.playVideo();
       }
     } else {
       setCurrentSong(song);
       
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = song.src;
-        audioRef.current.load();
-        
-        const playPromise = audioRef.current.play();
-        
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              setIsPlaying(true);
-            })
-            .catch(error => {
-              console.error('Play promise error on new song:', error);
-              toast.error(`Couldn't play "${song.title}". Try again or select another song.`);
-              setIsPlaying(false);
-            });
-        }
+      if (playerRef.current) {
+        playerRef.current.loadVideoById({
+          videoId: song.videoId,
+          startSeconds: 0
+        });
+        playerRef.current.playVideo();
+      } else {
+        setIsPlaying(true);
       }
     }
   };
@@ -143,19 +150,8 @@ const Playlist: React.FC = () => {
     playSong(songs[prevIndex]);
   };
 
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      const duration = audioRef.current.duration;
-      const currentTime = audioRef.current.currentTime;
-      
-      if (duration) {
-        setProgress((currentTime / duration) * 100);
-      }
-    }
-  };
-
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!audioRef.current) return;
+    if (!playerRef.current || !currentSong) return;
     
     const progressBar = e.currentTarget;
     const rect = progressBar.getBoundingClientRect();
@@ -163,13 +159,39 @@ const Playlist: React.FC = () => {
     const width = rect.width;
     
     const percentage = (x / width) * 100;
+    
     setProgress(percentage);
     
-    audioRef.current.currentTime = (percentage / 100) * audioRef.current.duration;
+    const duration = playerRef.current.getDuration();
+    const seekToTime = (percentage / 100) * duration;
+    
+    playerRef.current.seekTo(seekToTime, true);
   };
 
-  const handleEnded = () => {
-    handleNext();
+  const toggleMute = () => {
+    if (!playerRef.current) return;
+    
+    if (isMuted) {
+      playerRef.current.unMute();
+      setIsMuted(false);
+    } else {
+      playerRef.current.mute();
+      setIsMuted(true);
+    }
+  };
+
+  const opts: YouTubeProps['opts'] = {
+    height: '1',
+    width: '1',
+    playerVars: {
+      autoplay: 0,
+      controls: 0,
+      disablekb: 1,
+      fs: 0,
+      modestbranding: 1,
+      rel: 0,
+      iv_load_policy: 3,
+    },
   };
 
   const containerVariants = {
@@ -253,6 +275,18 @@ const Playlist: React.FC = () => {
                 )}
               </div>
               
+              <div className="sr-only">
+                {currentSong && (
+                  <YouTube
+                    videoId={currentSong.videoId}
+                    opts={opts}
+                    onReady={onPlayerReady}
+                    onStateChange={onPlayerStateChange}
+                    className="hidden"
+                  />
+                )}
+              </div>
+              
               <div className="w-full mb-6">
                 <div 
                   className="w-full h-1 bg-romantic-100 rounded-full cursor-pointer"
@@ -292,6 +326,18 @@ const Playlist: React.FC = () => {
                   disabled={!currentSong}
                 >
                   <SkipForward className="w-5 h-5" />
+                </button>
+                
+                <button 
+                  onClick={toggleMute}
+                  className="p-2 text-romantic-600 hover:text-romantic-800 transition-colors"
+                  disabled={!currentSong}
+                >
+                  {isMuted ? (
+                    <VolumeX className="w-5 h-5" />
+                  ) : (
+                    <Volume2 className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
