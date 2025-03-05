@@ -59,6 +59,8 @@ const Playlist: React.FC = () => {
   const playerRef = useRef<YouTubePlayer | null>(null);
   const progressIntervalRef = useRef<number | null>(null);
   const [playerReady, setPlayerReady] = useState(false);
+  // Add a new state to track if we're switching songs
+  const [isSwitchingSong, setIsSwitchingSong] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -159,16 +161,20 @@ const Playlist: React.FC = () => {
           startProgressInterval();
         }
       } else {
-        // New song selected
+        // New song selected - set this to true to indicate we're switching
+        setIsSwitchingSong(true);
+        // Always set isPlaying to true when selecting a new song
+        setIsPlaying(true);
         setCurrentSong(song);
         setProgress(0);
-        setIsPlaying(true);
         
         if (playerRef.current && playerReady) {
           playerRef.current.loadVideoById({
             videoId: song.videoId,
             startSeconds: 0
           });
+          // The video should start playing automatically because loadVideoById 
+          // should trigger play, but we'll add an explicit play command to be sure
           playerRef.current.playVideo();
         } else {
           toast.info("Preparing your song...");
@@ -184,22 +190,32 @@ const Playlist: React.FC = () => {
   useEffect(() => {
     if (currentSong && playerRef.current && playerReady) {
       try {
-        playerRef.current.loadVideoById({
-          videoId: currentSong.videoId,
-          startSeconds: 0
-        });
-        
-        // Only play if isPlaying is true
-        if (isPlaying) {
+        // When switching songs, always load and play
+        if (isSwitchingSong) {
+          playerRef.current.loadVideoById({
+            videoId: currentSong.videoId,
+            startSeconds: 0
+          });
           playerRef.current.playVideo();
+          setIsSwitchingSong(false); // Reset the switching flag
         } else {
-          playerRef.current.pauseVideo();
+          // Normal behavior when not switching songs
+          playerRef.current.loadVideoById({
+            videoId: currentSong.videoId,
+            startSeconds: 0
+          });
+          
+          if (isPlaying) {
+            playerRef.current.playVideo();
+          } else {
+            playerRef.current.pauseVideo();
+          }
         }
       } catch (error) {
         console.error("Auto-play error:", error);
       }
     }
-  }, [currentSong, playerReady]);
+  }, [currentSong, playerReady, isSwitchingSong]);
 
   const handleNext = () => {
     if (!currentSong) {
