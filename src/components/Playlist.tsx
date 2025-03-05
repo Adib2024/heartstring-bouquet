@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, SkipForward, SkipBack, Music, Volume2, VolumeX } from 'lucide-react';
@@ -73,9 +74,13 @@ const Playlist: React.FC = () => {
     
     try {
       playerRef.current.setVolume(50);
-
+      // Don't autoplay when the player is ready
+      // Only play if the user has explicitly started playing
       if (currentSong && isPlaying) {
         event.target.playVideo();
+      } else {
+        // Ensure it's paused when initialized
+        event.target.pauseVideo();
       }
     } catch (error) {
       console.error("Player ready error:", error);
@@ -143,20 +148,18 @@ const Playlist: React.FC = () => {
   const playSong = (song: Song) => {
     try {
       if (currentSong?.id === song.id) {
+        // Toggle play/pause for the current song
         if (isPlaying && playerRef.current) {
           playerRef.current.pauseVideo();
           setIsPlaying(false);
           stopProgressInterval();
-          return;
-        }
-        
-        setProgress(0);
-        if (playerRef.current) {
-          playerRef.current.seekTo(0, true);
+        } else if (playerRef.current) {
           playerRef.current.playVideo();
           setIsPlaying(true);
+          startProgressInterval();
         }
       } else {
+        // New song selected
         setCurrentSong(song);
         setProgress(0);
         setIsPlaying(true);
@@ -177,14 +180,21 @@ const Playlist: React.FC = () => {
     }
   };
 
+  // Fix the loading of a new song when setting currentSong
   useEffect(() => {
-    if (currentSong && playerRef.current && playerReady && isPlaying) {
+    if (currentSong && playerRef.current && playerReady) {
       try {
         playerRef.current.loadVideoById({
           videoId: currentSong.videoId,
           startSeconds: 0
         });
-        playerRef.current.playVideo();
+        
+        // Only play if isPlaying is true
+        if (isPlaying) {
+          playerRef.current.playVideo();
+        } else {
+          playerRef.current.pauseVideo();
+        }
       } catch (error) {
         console.error("Auto-play error:", error);
       }
@@ -257,7 +267,8 @@ const Playlist: React.FC = () => {
     height: '1',
     width: '1',
     playerVars: {
-      autoplay: 1,
+      // Set autoplay to 0 to ensure it doesn't play automatically
+      autoplay: 0,
       controls: 0,
       disablekb: 1,
       fs: 0,

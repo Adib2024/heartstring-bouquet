@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart } from 'lucide-react';
@@ -11,36 +10,6 @@ interface Message {
 }
 
 const messages: Message[] = [
-  {
-    id: 1,
-    date: 'February 14, 2023',
-    title: 'Happy Valentine\'s Day',
-    content: 'Every day with you feels like Valentine\'s Day to me. Your love is the greatest gift I could ever ask for. The way you care, the way you laugh, the way you hold my hand — all of these little moments are what I cherish most. I never knew love could feel this complete until I found you. I love you more than words can express, today and always.'
-  },
-  {
-    id: 2,
-    date: 'April 27, 2023',
-    title: 'The Day We Met',
-    content: 'Do you remember the day we first met? I was so nervous, but the moment I saw your smile, everything felt right. Something about you just clicked with me in a way no one else ever had. Looking back now, I think a part of me knew even then that you would become the most important person in my life. That day changed everything, and I\'m grateful for it every single day.'
-  },
-  {
-    id: 3,
-    date: 'July 12, 2023',
-    title: 'Under Summer Stars',
-    content: 'Remember that night we laid under the stars? The way the moonlight reflected in your eyes made my heart skip a beat. We talked for hours about our dreams, our fears, and our hopes for the future. In that moment, I knew that whatever life had in store for us, I wanted to face it together with you. Every star in the sky reminds me of the light you bring to my life.'
-  },
-  {
-    id: 4,
-    date: 'October 5, 2023',
-    title: 'Autumn Walks',
-    content: 'Our walks through the autumn leaves have become my favorite tradition. The way you get excited about the smallest things—like finding the perfect leaf or spotting a bird in the distance—fills me with so much joy. These simple moments with you are what make life beautiful. As the seasons change, my love for you only grows stronger, deeper, and more certain.'
-  },
-  {
-    id: 5,
-    date: 'December 31, 2023',
-    title: 'New Year\'s Promise',
-    content: 'As we stand on the edge of a new year, I want you to know that you\'re the best part of all my days. Every memory we\'ve created together is precious to me. I promise to love you more with each passing day, to be your support when you need strength, and to cherish every moment we share. Here\'s to another year of us—of laughter, adventure, growth, and endless love.'
-  },
   {
     id: 6,
     date: '20 กุมภาพันธ์ 2025',
@@ -74,7 +43,6 @@ const Messages: React.FC = () => {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
