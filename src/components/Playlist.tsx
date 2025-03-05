@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, SkipForward, SkipBack, Music, Volume2, VolumeX } from 'lucide-react';
@@ -144,7 +143,13 @@ const Playlist: React.FC = () => {
   const playSong = (song: Song) => {
     try {
       if (currentSong?.id === song.id) {
-        // Even if it's the same song, restart it and make sure it plays
+        if (isPlaying && playerRef.current) {
+          playerRef.current.pauseVideo();
+          setIsPlaying(false);
+          stopProgressInterval();
+          return;
+        }
+        
         setProgress(0);
         if (playerRef.current) {
           playerRef.current.seekTo(0, true);
@@ -152,7 +157,6 @@ const Playlist: React.FC = () => {
           setIsPlaying(true);
         }
       } else {
-        // Different song selected
         setCurrentSong(song);
         setProgress(0);
         setIsPlaying(true);
@@ -253,7 +257,7 @@ const Playlist: React.FC = () => {
     height: '1',
     width: '1',
     playerVars: {
-      autoplay: 1, // Changed from 0 to 1 to ensure autoplay
+      autoplay: 1,
       controls: 0,
       disablekb: 1,
       fs: 0,
