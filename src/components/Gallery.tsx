@@ -147,7 +147,7 @@ const Gallery: React.FC = () => {
               variants={itemVariants}
               onClick={() => handlePhotoClick(photo)}
             >
-              <div className="overflow-hidden h-[300px] relative">
+              <div className="overflow-hidden h-[450px] relative">
                 {!loadedImages.has(photo.id) && !errorImages.has(photo.id) && (
                   <div className="absolute inset-0 image-loading"></div>
                 )}
@@ -188,7 +188,7 @@ const Gallery: React.FC = () => {
             onClick={handleCloseModal}
           >
             <motion.div 
-              className="relative max-w-5xl max-h-[90vh] bg-white rounded-xl overflow-hidden"
+              className="relative max-w-4xl max-h-[90vh] bg-white rounded-xl overflow-hidden"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -202,7 +202,7 @@ const Gallery: React.FC = () => {
                 <X size={20} />
               </button>
               
-              <div className="h-[70vh] bg-gray-100 relative">
+              <div className="h-[80vh] max-w-md mx-auto bg-gray-100 relative">
                 {errorImages.has(selectedPhoto.id) ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-cream-50 p-4 text-center">
                     <AlertCircle className="h-16 w-16 text-romantic-400 mb-4" />
