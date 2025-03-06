@@ -3,14 +3,40 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Unlock, Heart } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Surprise: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
   const navigate = useNavigate();
+  const { language } = useLanguage();
   
   // This would typically be stored securely, but for simplicity:
   const correctPassword = 'loveyou';
+
+  const content = {
+    th: {
+      title: 'เซอร์ไพรส์พิเศษ',
+      description: 'ฉันได้เตรียมบางสิ่งพิเศษไว้สำหรับคุณโดยเฉพาะ ใส่รหัสผ่านเพื่อปลดล็อค',
+      hint: '(คำใบ้: คือสามคำที่ฉันบอกคุณเสมอ ไม่มีเว้นวรรค)',
+      placeholder: 'ใส่รหัสผ่าน',
+      errorMsg: 'รหัสผ่านไม่ถูกต้อง ลองอีกครั้ง!',
+      buttonText: 'ปลดล็อคหัวใจของฉัน',
+      footerText: 'นี่นำไปสู่หน้าพิเศษที่เป็นเรื่องระหว่างเราเท่านั้น'
+    },
+    en: {
+      title: 'A Special Surprise',
+      description: 'I\'ve prepared something special just for you. Enter the password to unlock it.',
+      hint: '(Hint: It\'s three words I always tell you, without spaces)',
+      placeholder: 'Enter the password',
+      errorMsg: 'That\'s not quite right. Try again!',
+      buttonText: 'Unlock My Heart',
+      footerText: 'This leads to a special page that\'s just between us.'
+    }
+  };
+
+  // Select content based on current language
+  const currentContent = language === 'th' ? content.th : content.en;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,13 +66,13 @@ const Surprise: React.FC = () => {
           </div>
           
           <h2 className="text-3xl font-serif font-bold text-romantic-900 mb-4">
-            A Special Surprise
+            {currentContent.title}
           </h2>
           
           <p className="text-romantic-700 mb-8">
-            I've prepared something special just for you. Enter the password to unlock it.
+            {currentContent.description}
             <span className="block mt-2 text-sm text-romantic-500 italic">
-              (Hint: It's three words I always tell you, without spaces)
+              {currentContent.hint}
             </span>
           </p>
           
@@ -54,7 +80,7 @@ const Surprise: React.FC = () => {
             <div className="relative">
               <input
                 type="password"
-                placeholder="Enter the password"
+                placeholder={currentContent.placeholder}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={`w-full px-4 py-3 rounded-lg border ${
@@ -78,7 +104,7 @@ const Surprise: React.FC = () => {
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
                 >
-                  That's not quite right. Try again!
+                  {currentContent.errorMsg}
                 </motion.p>
               )}
             </AnimatePresence>
@@ -87,13 +113,13 @@ const Surprise: React.FC = () => {
               type="submit"
               className="w-full py-3 px-4 bg-romantic-500 hover:bg-romantic-600 text-white rounded-lg transition-colors duration-300 flex items-center justify-center"
             >
-              <span>Unlock My Heart</span>
+              <span>{currentContent.buttonText}</span>
               <Heart className="w-4 h-4 ml-2" />
             </button>
           </form>
           
           <p className="mt-6 text-sm text-romantic-600">
-            This leads to a special page that's just between us.
+            {currentContent.footerText}
           </p>
         </div>
       </motion.div>

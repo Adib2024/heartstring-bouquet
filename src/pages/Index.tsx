@@ -9,8 +9,11 @@ import Surprise from '@/components/Surprise';
 import CocaColaSurprise from '@/components/CocaColaSurprise';
 import Contact from '@/components/Contact';
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Index: React.FC = () => {
+  const { language } = useLanguage();
+  
   // Scroll to the section specified in the URL hash on initial load
   useEffect(() => {
     const hash = window.location.hash;

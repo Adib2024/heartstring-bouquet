@@ -3,11 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { Heart } from 'lucide-react';
+import LanguageToggle from './LanguageToggle';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Navigation: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const [activeSection, setActiveSection] = useState('hero');
+  const { language } = useLanguage();
 
   // Handle scroll effect
   useEffect(() => {
@@ -37,11 +40,31 @@ const Navigation: React.FC = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Home', path: '/#hero', section: 'hero' },
-    { name: 'Gallery', path: '/#gallery', section: 'gallery' },
-    { name: 'Messages', path: '/#messages', section: 'messages' },
-    { name: 'Playlist', path: '/#playlist', section: 'playlist' },
-    { name: 'Contact', path: '/#contact', section: 'contact' },
+    { 
+      name: language === 'th' ? 'หน้าหลัก' : 'Home', 
+      path: '/#hero', 
+      section: 'hero' 
+    },
+    { 
+      name: language === 'th' ? 'แกลเลอรี่' : 'Gallery', 
+      path: '/#gallery', 
+      section: 'gallery' 
+    },
+    { 
+      name: language === 'th' ? 'ข้อความ' : 'Messages', 
+      path: '/#messages', 
+      section: 'messages' 
+    },
+    { 
+      name: language === 'th' ? 'เพลย์ลิสต์' : 'Playlist', 
+      path: '/#playlist', 
+      section: 'playlist' 
+    },
+    { 
+      name: language === 'th' ? 'ติดต่อ' : 'Contact', 
+      path: '/#contact', 
+      section: 'contact' 
+    },
   ];
 
   const scrollToSection = (sectionId: string) => {
@@ -79,11 +102,13 @@ const Navigation: React.FC = () => {
               }}
             >
               <Heart className="h-6 w-6 text-romantic-500" fill="#f686a6" />
-              <span className="text-romantic-900 font-serif text-xl font-medium">For You</span>
+              <span className="text-romantic-900 font-serif text-xl font-medium">
+                {language === 'th' ? 'สำหรับคุณ' : 'For You'}
+              </span>
             </Link>
           </motion.div>
           
-          <nav className="hidden md:flex space-x-1">
+          <nav className="hidden md:flex space-x-1 items-center">
             {navLinks.map((link) => (
               <NavLink 
                 key={link.name} 
@@ -99,6 +124,9 @@ const Navigation: React.FC = () => {
                 {link.name}
               </NavLink>
             ))}
+            <div className="ml-2">
+              <LanguageToggle />
+            </div>
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -108,12 +136,13 @@ const Navigation: React.FC = () => {
                 to="/surprise"
                 className="px-4 py-2 rounded-full bg-romantic-100 text-romantic-500 font-medium text-sm hover:bg-romantic-200 transition-colors duration-300"
               >
-                Surprise
+                {language === 'th' ? 'เซอร์ไพรส์' : 'Surprise'}
               </Link>
             </motion.div>
           </nav>
           
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center space-x-2">
+            <LanguageToggle />
             <MobileMenu links={navLinks} scrollToSection={scrollToSection} />
           </div>
         </div>
@@ -164,6 +193,7 @@ const MobileMenu: React.FC<{
 }> = ({ links, scrollToSection }) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { language } = useLanguage();
   
   return (
     <div>
@@ -215,7 +245,7 @@ const MobileMenu: React.FC<{
               className="mt-2 px-4 py-3 bg-romantic-100 text-romantic-500 rounded-md text-sm font-medium hover:bg-romantic-200 transition-colors duration-300"
               onClick={() => setIsOpen(false)}
             >
-              Surprise
+              {language === 'th' ? 'เซอร์ไพรส์' : 'Surprise'}
             </Link>
           </div>
         </motion.div>

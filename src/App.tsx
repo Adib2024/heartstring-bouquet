@@ -8,23 +8,26 @@ import { AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
 import SurprisePage from "./pages/SurprisePage";
 import NotFound from "./pages/NotFound";
+import { LanguageProvider } from "./contexts/LanguageContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AnimatePresence mode="wait">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/surprise" element={<SurprisePage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AnimatePresence>
-      </BrowserRouter>
+      <LanguageProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AnimatePresence mode="wait">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/surprise" element={<SurprisePage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AnimatePresence>
+        </BrowserRouter>
+      </LanguageProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

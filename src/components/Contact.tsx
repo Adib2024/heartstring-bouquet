@@ -3,20 +3,76 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Send, MessageSquareHeart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Contact: React.FC = () => {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const { toast } = useToast();
+  const { language } = useLanguage();
+
+  const content = {
+    th: {
+      badge: 'เขียนถึงฉัน',
+      title: 'ส่ง',
+      titleHighlight: 'ข้อความ',
+      description: 'ฉันอยากได้ยินจากคุณ แบ่งปันความทรงจำ บอกฉันว่าคุณรู้สึกอย่างไร หรือแค่ส่งคำทักทาย คำพูดของคุณทำให้วันของฉันสดใสเสมอ',
+      nameLabel: 'ชื่อของคุณ',
+      namePlaceholder: 'ชื่อของคุณ',
+      messageLabel: 'ข้อความของคุณ',
+      messagePlaceholder: 'คุณอยากจะบอกอะไรกับฉัน?',
+      sendButton: 'ส่งข้อความ',
+      sending: 'กำลังส่ง...',
+      contactMe: 'ติดต่อฉัน',
+      alwaysRespond: 'ฉันจะตอบกลับเสมอ',
+      yourMessages: 'ข้อความของคุณมีความหมายกับฉันมาก ไม่ว่าจะเป็นบันทึกที่น่ารัก ความทรงจำที่คุณอยากแบ่งปัน หรือแค่คำทักทาย ฉันอยากได้ยินจากคุณ',
+      leaveMessage: 'ฝากข้อความได้ตลอดเวลา',
+      useForm: 'ใช้แบบฟอร์มนี้เพื่อส่งความคิด ความรู้สึก หรือสิ่งที่คุณอยากแบ่งปัน ฉันสัญญาว่าจะอ่านทุกคำพร้อมรอยยิ้ม',
+      privateSpace: 'พื้นที่ส่วนตัวของเรา',
+      cornerInternet: 'นี่คือมุมพิเศษของเราบนอินเทอร์เน็ต — สถานที่ที่ระยะทางหายไปและเราสามารถรู้สึกเชื่อมต่อกันได้เสมอ',
+      cantWait: 'รอที่จะได้ยินจากคุณ',
+      errorTitle: 'กรุณากรอกข้อมูลให้ครบ',
+      errorDesc: 'ทั้งชื่อและข้อความจำเป็นต้องกรอก',
+      successTitle: 'ส่งข้อความสำเร็จ',
+      successDesc: 'ฉันจะอ่านมันพร้อมรอยยิ้มบนใบหน้า'
+    },
+    en: {
+      badge: 'Write To Me',
+      title: 'Send Me A',
+      titleHighlight: 'Message',
+      description: 'I\'d love to hear from you. Share a memory, tell me how you feel, or simply send a hello. Your words always brighten my day.',
+      nameLabel: 'Your Name',
+      namePlaceholder: 'Your name',
+      messageLabel: 'Your Message',
+      messagePlaceholder: 'What would you like to tell me?',
+      sendButton: 'Send Message',
+      sending: 'Sending...',
+      contactMe: 'Contact Me',
+      alwaysRespond: 'I\'ll always respond',
+      yourMessages: 'Your messages mean the world to me. Whether it\'s a sweet note, a memory you want to share, or just a hello, I\'d love to hear from you.',
+      leaveMessage: 'Leave a message anytime',
+      useForm: 'Use this form to send me your thoughts, feelings, or anything you\'d like to share. I promise to read every word with a smile.',
+      privateSpace: 'Our private space',
+      cornerInternet: 'This is our special corner of the internet — a place where distance disappears and we can always feel connected.',
+      cantWait: 'Can\'t wait to hear from you',
+      errorTitle: 'Please fill in all fields',
+      errorDesc: 'Both name and message are required',
+      successTitle: 'Message sent successfully',
+      successDesc: 'I\'ll read it with a smile on my face'
+    }
+  };
+
+  // Select content based on current language
+  const currentContent = language === 'th' ? content.th : content.en;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (name.trim() === '' || message.trim() === '') {
       toast({
-        title: "Please fill in all fields",
-        description: "Both name and message are required",
+        title: currentContent.errorTitle,
+        description: currentContent.errorDesc,
         variant: "destructive",
       });
       return;
@@ -27,8 +83,8 @@ const Contact: React.FC = () => {
     // Simulate sending a message
     setTimeout(() => {
       toast({
-        title: "Message sent successfully",
-        description: "I'll read it with a smile on my face",
+        title: currentContent.successTitle,
+        description: currentContent.successDesc,
         duration: 5000,
       });
       
@@ -43,14 +99,13 @@ const Contact: React.FC = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <span className="inline-block py-1 px-3 rounded-full text-xs bg-romantic-100 text-romantic-800 mb-4">
-            Write To Me
+            {currentContent.badge}
           </span>
           <h2 className="text-4xl font-serif font-bold text-romantic-900 mb-6">
-            Send Me A <span className="text-romantic-500">Message</span>
+            {currentContent.title} <span className="text-romantic-500">{currentContent.titleHighlight}</span>
           </h2>
           <p className="max-w-2xl mx-auto text-romantic-700">
-            I'd love to hear from you. Share a memory, tell me how you feel, or simply send a hello.
-            Your words always brighten my day.
+            {currentContent.description}
           </p>
         </div>
         
@@ -66,32 +121,32 @@ const Contact: React.FC = () => {
               <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
                 <h3 className="text-xl font-serif font-semibold text-romantic-800 mb-6 flex items-center">
                   <MessageSquareHeart className="mr-2 h-5 w-5 text-romantic-500" />
-                  Write Something Sweet
+                  {language === 'th' ? 'เขียนอะไรซักอย่างที่หวานๆ' : 'Write Something Sweet'}
                 </h3>
                 
                 <div className="mb-6">
                   <label htmlFor="name" className="block text-sm font-medium text-romantic-700 mb-2">
-                    Your Name
+                    {currentContent.nameLabel}
                   </label>
                   <input
                     type="text"
                     id="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Your name"
+                    placeholder={currentContent.namePlaceholder}
                     className="w-full px-4 py-3 rounded-lg border border-romantic-200 focus:outline-none focus:ring-2 focus:ring-romantic-300 transition-all duration-300"
                   />
                 </div>
                 
                 <div className="mb-6 flex-1">
                   <label htmlFor="message" className="block text-sm font-medium text-romantic-700 mb-2">
-                    Your Message
+                    {currentContent.messageLabel}
                   </label>
                   <textarea
                     id="message"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="What would you like to tell me?"
+                    placeholder={currentContent.messagePlaceholder}
                     rows={5}
                     className="w-full px-4 py-3 rounded-lg border border-romantic-200 focus:outline-none focus:ring-2 focus:ring-romantic-300 transition-all duration-300 resize-none flex-1"
                   ></textarea>
@@ -109,11 +164,11 @@ const Contact: React.FC = () => {
                   {isSending ? (
                     <>
                       <div className="mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Sending...</span>
+                      <span>{currentContent.sending}</span>
                     </>
                   ) : (
                     <>
-                      <span>Send Message</span>
+                      <span>{currentContent.sendButton}</span>
                       <Send className="ml-2 h-4 w-4" />
                     </>
                   )}
@@ -135,37 +190,34 @@ const Contact: React.FC = () => {
                   <Mail className="h-6 w-6 text-romantic-500" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-serif font-semibold text-romantic-800">Contact Me</h3>
-                  <p className="text-romantic-600 text-sm">I'll always respond</p>
+                  <h3 className="text-xl font-serif font-semibold text-romantic-800">{currentContent.contactMe}</h3>
+                  <p className="text-romantic-600 text-sm">{currentContent.alwaysRespond}</p>
                 </div>
               </div>
               
               <div className="flex-1 space-y-6">
                 <p className="text-romantic-700 leading-relaxed">
-                  Your messages mean the world to me. Whether it's a sweet note, a memory you want to share, 
-                  or just a hello, I'd love to hear from you.
+                  {currentContent.yourMessages}
                 </p>
                 
                 <div className="p-6 bg-white/50 rounded-lg border border-romantic-100">
-                  <p className="text-romantic-700 font-medium mb-2">Leave a message anytime</p>
+                  <p className="text-romantic-700 font-medium mb-2">{currentContent.leaveMessage}</p>
                   <p className="text-romantic-600 text-sm">
-                    Use this form to send me your thoughts, feelings, or anything you'd like to share.
-                    I promise to read every word with a smile.
+                    {currentContent.useForm}
                   </p>
                 </div>
                 
                 <div className="p-6 bg-white/50 rounded-lg border border-romantic-100">
-                  <p className="text-romantic-700 font-medium mb-2">Our private space</p>
+                  <p className="text-romantic-700 font-medium mb-2">{currentContent.privateSpace}</p>
                   <p className="text-romantic-600 text-sm">
-                    This is our special corner of the internet — a place where distance disappears
-                    and we can always feel connected.
+                    {currentContent.cornerInternet}
                   </p>
                 </div>
               </div>
               
               <div className="mt-6 pt-6 border-t border-romantic-100">
                 <p className="font-handwriting text-xl text-romantic-500 text-center">
-                  Can't wait to hear from you
+                  {currentContent.cantWait}
                 </p>
               </div>
             </div>
