@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
@@ -12,7 +11,6 @@ const Navigation: React.FC = () => {
   const [activeSection, setActiveSection] = useState('hero');
   const { language } = useLanguage();
 
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -21,7 +19,6 @@ const Navigation: React.FC = () => {
         setIsScrolled(false);
       }
 
-      // Determine active section based on scroll position
       const sections = ['hero', 'gallery', 'messages', 'playlist', 'contact'];
       for (const section of sections) {
         const element = document.getElementById(section);
@@ -39,38 +36,30 @@ const Navigation: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { 
-      name: language === 'th' ? 'หน้าหลัก' : 'Home', 
-      path: '/#hero', 
-      section: 'hero' 
-    },
-    { 
-      name: language === 'th' ? 'แกลเลอรี่' : 'Gallery', 
-      path: '/#gallery', 
-      section: 'gallery' 
-    },
-    { 
-      name: language === 'th' ? 'ข้อความ' : 'Messages', 
-      path: '/#messages', 
-      section: 'messages' 
-    },
-    { 
-      name: language === 'th' ? 'เพลย์ลิสต์' : 'Playlist', 
-      path: '/#playlist', 
-      section: 'playlist' 
-    },
-    { 
-      name: language === 'th' ? 'ติดต่อ' : 'Contact', 
-      path: '/#contact', 
-      section: 'contact' 
-    },
-  ];
+  const navItems = {
+    th: [
+      { name: 'หน้าหลัก', path: '/#hero', section: 'hero' },
+      { name: 'แกลเลอรี่', path: '/#gallery', section: 'gallery' },
+      { name: 'ข้อความ', path: '/#messages', section: 'messages' },
+      { name: 'เพลย์ลิสต์', path: '/#playlist', section: 'playlist' },
+      { name: 'ติดต่อ', path: '/#contact', section: 'contact' },
+    ],
+    en: [
+      { name: 'Home', path: '/#hero', section: 'hero' },
+      { name: 'Gallery', path: '/#gallery', section: 'gallery' },
+      { name: 'Messages', path: '/#messages', section: 'messages' },
+      { name: 'Playlist', path: '/#playlist', section: 'playlist' },
+      { name: 'Contact', path: '/#contact', section: 'contact' },
+    ]
+  };
+
+  const navLinks = language === 'th' ? navItems.th : navItems.en;
+  const surpriseText = language === 'th' ? 'เซอร์ไพรส์' : 'Surprise';
+  const logoText = language === 'th' ? 'สำหรับคุณ' : 'For You';
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      // Use smooth scrolling behavior
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
@@ -103,7 +92,7 @@ const Navigation: React.FC = () => {
             >
               <Heart className="h-6 w-6 text-romantic-500" fill="#f686a6" />
               <span className="text-romantic-900 font-serif text-xl font-medium">
-                {language === 'th' ? 'สำหรับคุณ' : 'For You'}
+                {logoText}
               </span>
             </Link>
           </motion.div>
@@ -136,14 +125,14 @@ const Navigation: React.FC = () => {
                 to="/surprise"
                 className="px-4 py-2 rounded-full bg-romantic-100 text-romantic-500 font-medium text-sm hover:bg-romantic-200 transition-colors duration-300"
               >
-                {language === 'th' ? 'เซอร์ไพรส์' : 'Surprise'}
+                {surpriseText}
               </Link>
             </motion.div>
           </nav>
           
           <div className="md:hidden flex items-center space-x-2">
             <LanguageToggle />
-            <MobileMenu links={navLinks} scrollToSection={scrollToSection} />
+            <MobileMenu links={navLinks} scrollToSection={scrollToSection} surpriseText={surpriseText} />
           </div>
         </div>
       </div>
@@ -151,7 +140,6 @@ const Navigation: React.FC = () => {
   );
 };
 
-// NavLink component for desktop navigation
 const NavLink: React.FC<{ 
   to: string; 
   isActive: boolean; 
@@ -186,14 +174,13 @@ const NavLink: React.FC<{
   );
 };
 
-// Mobile menu component
 const MobileMenu: React.FC<{ 
   links: { name: string; path: string; section: string }[]; 
   scrollToSection: (sectionId: string) => void;
-}> = ({ links, scrollToSection }) => {
+  surpriseText: string;
+}> = ({ links, scrollToSection, surpriseText }) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const { language } = useLanguage();
   
   return (
     <div>
@@ -245,7 +232,7 @@ const MobileMenu: React.FC<{
               className="mt-2 px-4 py-3 bg-romantic-100 text-romantic-500 rounded-md text-sm font-medium hover:bg-romantic-200 transition-colors duration-300"
               onClick={() => setIsOpen(false)}
             >
-              {language === 'th' ? 'เซอร์ไพรส์' : 'Surprise'}
+              {surpriseText}
             </Link>
           </div>
         </motion.div>

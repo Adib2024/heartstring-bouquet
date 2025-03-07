@@ -11,6 +11,7 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // Set default language to Thai
   const [language, setLanguage] = useState<Language>('th');
 
   // Load saved language preference from localStorage on initial render
