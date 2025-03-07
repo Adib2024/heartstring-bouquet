@@ -21,11 +21,11 @@ const Hero: React.FC = () => {
       badge: 'With all my heart',
       title: 'For the One Who',
       titleHighlight: 'Stole My Heart',
-      description: 'This is a space dedicated to us — to our memories, our moments, and all the little things that make our love story uniquely ours. Every detail here is crafted with love, just like the life we're building together.',
+      description: 'This is a space dedicated to us — to our memories, our moments, and all the little things that make our love story uniquely ours. Every detail here is crafted with love, just like the life we\'re building together.',
       exploreButton: 'Explore Our Memories',
       readButton: 'Read My Notes',
       quote: 'Every day with you is my favorite day.',
-      message: 'From the moment we met, you've brought a light to my life that I never knew was missing. Your smile, your laugh, the way you look at me — every little detail about you fills my heart with joy. I created this space to celebrate all that we are together, and all that we will be. This is my love letter to you, to us, and to our journey.'
+      message: 'From the moment we met, you\'ve brought a light to my life that I never knew was missing. Your smile, your laugh, the way you look at me — every little detail about you fills my heart with joy. I created this space to celebrate all that we are together, and all that we will be. This is my love letter to you, to us, and to our journey.'
     }
   };
 
