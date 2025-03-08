@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Send, MessageSquareHeart } from 'lucide-react';
@@ -35,7 +34,8 @@ const Contact: React.FC = () => {
       errorTitle: 'กรุณากรอกข้อมูลให้ครบ',
       errorDesc: 'ทั้งชื่อและข้อความจำเป็นต้องกรอก',
       successTitle: 'ส่งข้อความสำเร็จ',
-      successDesc: 'ฉันจะอ่านมันพร้อมรอยยิ้มบนใบหน้า'
+      successDesc: 'ฉันจะอ่านมันพร้อมรอยยิ้มบนใบหน้า',
+      writeSomethingSweet: 'เขียนอะไรซักอย่างที่หวานๆ'
     },
     en: {
       badge: 'Write To Me',
@@ -59,7 +59,8 @@ const Contact: React.FC = () => {
       errorTitle: 'Please fill in all fields',
       errorDesc: 'Both name and message are required',
       successTitle: 'Message sent successfully',
-      successDesc: 'I\'ll read it with a smile on my face'
+      successDesc: 'I\'ll read it with a smile on my face',
+      writeSomethingSweet: 'Write Something Sweet'
     }
   };
 
@@ -121,7 +122,7 @@ const Contact: React.FC = () => {
               <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
                 <h3 className="text-xl font-serif font-semibold text-romantic-800 mb-6 flex items-center">
                   <MessageSquareHeart className="mr-2 h-5 w-5 text-romantic-500" />
-                  {language === 'th' ? 'เขียนอะไรซักอย่างที่หวานๆ' : 'Write Something Sweet'}
+                  {currentContent.writeSomethingSweet}
                 </h3>
                 
                 <div className="mb-6">
