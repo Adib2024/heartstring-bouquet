@@ -7,18 +7,11 @@ import Messages from '@/components/Messages';
 import Surprise from '@/components/Surprise';
 import CocaColaSurprise from '@/components/CocaColaSurprise';
 import Contact from '@/components/Contact';
-import TrackingDashboard from '@/components/TrackingDashboard';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { usePageViewTracking, useScrollTracking, useClickTracking } from '@/hooks/useTrackingHooks';
 
 const Index: React.FC = () => {
   const { language } = useLanguage();
-  
-  // Initialize tracking hooks
-  usePageViewTracking();
-  useScrollTracking();
-  useClickTracking();
   
   // Scroll to the section specified in the URL hash on initial load
   useEffect(() => {
@@ -41,25 +34,22 @@ const Index: React.FC = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <section id="hero" data-track-id="hero-section">
+        <section id="hero">
           <Hero />
         </section>
-        <section id="gallery" data-track-id="gallery-section">
+        <section id="gallery">
           <Gallery />
         </section>
-        <section id="messages" data-track-id="messages-section">
+        <section id="messages">
           <Messages />
         </section>
-        <section id="surprise" data-track-id="surprise-section">
+        <section id="surprise">
           <Surprise />
           <CocaColaSurprise />
         </section>
-        <section id="contact" data-track-id="contact-section">
+        <section id="contact">
           <Contact />
         </section>
-        
-        {/* Add tracking dashboard */}
-        <TrackingDashboard />
       </motion.div>
     </Layout>
   );
