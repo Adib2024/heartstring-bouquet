@@ -19,7 +19,7 @@ const Navigation: React.FC = () => {
         setIsScrolled(false);
       }
 
-      const sections = ['hero', 'gallery', 'messages', 'playlist', 'contact'];
+      const sections = ['hero', 'gallery', 'messages', 'contact'];
       for (const section of sections) {
         const element = document.getElementById(section);
         if (element) {
@@ -41,14 +41,12 @@ const Navigation: React.FC = () => {
       { name: 'หน้าหลัก', path: '/#hero', section: 'hero' },
       { name: 'แกลเลอรี่', path: '/#gallery', section: 'gallery' },
       { name: 'ข้อความ', path: '/#messages', section: 'messages' },
-      { name: 'เพลย์ลิสต์', path: '/#playlist', section: 'playlist' },
       { name: 'ติดต่อ', path: '/#contact', section: 'contact' },
     ],
     en: [
       { name: 'Home', path: '/#hero', section: 'hero' },
       { name: 'Gallery', path: '/#gallery', section: 'gallery' },
       { name: 'Messages', path: '/#messages', section: 'messages' },
-      { name: 'Playlist', path: '/#playlist', section: 'playlist' },
       { name: 'Contact', path: '/#contact', section: 'contact' },
     ]
   };
