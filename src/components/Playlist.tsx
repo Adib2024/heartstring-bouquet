@@ -1,10 +1,51 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Music } from 'lucide-react';
+import { Music, PlayCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+
+interface Song {
+  id: number;
+  title: string;
+  artist: string;
+  link: string;
+}
 
 const Playlist: React.FC = () => {
   const { language } = useLanguage();
+
+  const songs: Song[] = [
+    {
+      id: 1,
+      title: "Perfect",
+      artist: "Ed Sheeran",
+      link: "https://www.youtube.com/watch?v=2Vv-BfVoq4g"
+    },
+    {
+      id: 2,
+      title: "At My Worst",
+      artist: "Pink Sweat$",
+      link: "https://www.youtube.com/watch?v=8CEJoCr_9UI"
+    },
+    {
+      id: 3,
+      title: "You Are The Reason",
+      artist: "Calum Scott",
+      link: "https://www.youtube.com/watch?v=ShZ978fBl6Y"
+    },
+    {
+      id: 4,
+      title: "ถ้าเธอรักฉันจริง",
+      artist: "สิงโต นำโชค",
+      link: "https://www.youtube.com/watch?v=MhL7jhl1PeQ"
+    },
+    {
+      id: 5,
+      title: "ทุกอย่าง",
+      artist: "COCKTAIL",
+      link: "https://www.youtube.com/watch?v=QbQJko0Gn9Q"
+    }
+  ];
 
   const content = {
     th: {
@@ -12,8 +53,9 @@ const Playlist: React.FC = () => {
       title: 'เพลงที่บอกเล่า',
       titleHighlight: 'เรื่องราวของเรา',
       description: 'ทุกความสัมพันธ์มีซาวด์แทร็กของตัวเอง เพลงเหล่านี้ได้กลายเป็นส่วนหนึ่งของเรื่องราวของเรา แต่ละเพลงมีความทรงจำหรือความรู้สึกพิเศษที่เชื่อมโยงเรา',
-      playlistNote: 'คลิกที่ปุ่มเพื่อฟังเพลงของเรา',
-      buttonText: 'ฟังเพลย์ลิสต์ของเรา',
+      playlistNote: 'คลิกที่เพลงเพื่อฟัง',
+      buttonText: 'ฟังเพลย์ลิสต์ทั้งหมด',
+      playText: 'เล่น',
       loadingText: 'กำลังโหลด...',
       errorText: 'เกิดข้อผิดพลาดในการโหลดเพลย์ลิสต์ กรุณาลองใหม่อีกครั้ง'
     },
@@ -22,8 +64,9 @@ const Playlist: React.FC = () => {
       title: 'Songs That Tell',
       titleHighlight: 'Our Story',
       description: 'Every relationship has its own soundtrack. These songs have become part of our story, each one holding a special memory or feeling that connects us.',
-      playlistNote: 'Click the button to listen to our songs',
-      buttonText: 'Listen to Our Playlist',
+      playlistNote: 'Click on a song to listen',
+      buttonText: 'Listen to Full Playlist',
+      playText: 'Play',
       loadingText: 'Loading...',
       errorText: 'Error loading playlist. Please try again.'
     }
@@ -59,13 +102,39 @@ const Playlist: React.FC = () => {
           transition={{ duration: 0.7 }}
           viewport={{ once: true, margin: "-100px" }}
         >
-          <div className="glass-card rounded-xl p-8 text-center">
+          <div className="glass-card rounded-xl p-8">
             <Music className="h-12 w-12 text-romantic-400 mx-auto mb-4" />
-            <h3 className="text-xl font-serif font-semibold text-romantic-800 mb-4">
+            <h3 className="text-xl font-serif font-semibold text-romantic-800 mb-6 text-center">
               {currentContent.playlistNote}
             </h3>
             
-            <div className="mt-6">
+            <div className="space-y-3 mb-8">
+              {songs.map((song) => (
+                <a
+                  key={song.id}
+                  href={song.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-4 rounded-lg hover:bg-romantic-50 transition-colors duration-200"
+                >
+                  <div className="flex items-center">
+                    <span className="text-romantic-400 w-6 text-center">{song.id}.</span>
+                    <div className="ml-4">
+                      <h4 className="font-medium text-romantic-800">{song.title}</h4>
+                      <p className="text-sm text-romantic-500">{song.artist}</p>
+                    </div>
+                  </div>
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    className="text-romantic-500"
+                  >
+                    <PlayCircle size={20} />
+                  </motion.div>
+                </a>
+              ))}
+            </div>
+            
+            <div className="text-center mt-6">
               <a 
                 href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLnbwZHro0FzTZULQ1pOKHKWL1hL52-tDV" 
                 target="_blank" 
