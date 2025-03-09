@@ -114,7 +114,7 @@ const Contact: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          service_id: 'default_service', // Replace with your Email.js service ID
+          service_id: 'service_euedxns', // Updated service ID
           template_id: 'template_default', // Replace with your Email.js template ID
           user_id: 'user_yourUserID', // Replace with your Email.js user ID
           template_params: {
