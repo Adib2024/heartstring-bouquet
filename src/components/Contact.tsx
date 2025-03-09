@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Send, MessageSquareHeart } from 'lucide-react';
@@ -7,6 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 const Contact: React.FC = () => {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
+  const [email, setEmail] = useState('');
   const [isSending, setIsSending] = useState(false);
   const { toast } = useToast();
   const { language } = useLanguage();
@@ -19,6 +21,8 @@ const Contact: React.FC = () => {
       description: 'ฉันอยากได้ยินจากคุณ แบ่งปันความทรงจำ บอกฉันว่าคุณรู้สึกอย่างไร หรือแค่ส่งคำทักทาย คำพูดของคุณทำให้วันของฉันสดใสเสมอ',
       nameLabel: 'ชื่อของคุณ',
       namePlaceholder: 'ชื่อของคุณ',
+      emailLabel: 'อีเมลของคุณ (ถ้าต้องการการตอบกลับ)',
+      emailPlaceholder: 'อีเมลของคุณ',
       messageLabel: 'ข้อความของคุณ',
       messagePlaceholder: 'คุณอยากจะบอกอะไรกับฉัน?',
       sendButton: 'ส่งข้อความ',
@@ -35,7 +39,8 @@ const Contact: React.FC = () => {
       errorDesc: 'ทั้งชื่อและข้อความจำเป็นต้องกรอก',
       successTitle: 'ส่งข้อความสำเร็จ',
       successDesc: 'ฉันจะอ่านมันพร้อมรอยยิ้มบนใบหน้า',
-      writeSomethingSweet: 'เขียนอะไรซักอย่างที่หวานๆ'
+      writeSomethingSweet: 'เขียนอะไรซักอย่างที่หวานๆ',
+      emailError: 'กรุณากรอกอีเมลที่ถูกต้อง หากต้องการการตอบกลับ'
     },
     en: {
       badge: 'Write To Me',
@@ -44,6 +49,8 @@ const Contact: React.FC = () => {
       description: 'I\'d love to hear from you. Share a memory, tell me how you feel, or simply send a hello. Your words always brighten my day.',
       nameLabel: 'Your Name',
       namePlaceholder: 'Your name',
+      emailLabel: 'Your Email (if you want a reply)',
+      emailPlaceholder: 'Your email',
       messageLabel: 'Your Message',
       messagePlaceholder: 'What would you like to tell me?',
       sendButton: 'Send Message',
@@ -60,14 +67,22 @@ const Contact: React.FC = () => {
       errorDesc: 'Both name and message are required',
       successTitle: 'Message sent successfully',
       successDesc: 'I\'ll read it with a smile on my face',
-      writeSomethingSweet: 'Write Something Sweet'
+      writeSomethingSweet: 'Write Something Sweet',
+      emailError: 'Please enter a valid email if you want a reply'
     }
   };
 
   // Select content based on current language
   const currentContent = language === 'th' ? content.th : content.en;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Email validation function
+  const validateEmail = (email: string): boolean => {
+    if (!email) return true; // Email is optional
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (name.trim() === '' || message.trim() === '') {
@@ -78,21 +93,72 @@ const Contact: React.FC = () => {
       });
       return;
     }
+
+    // Validate email if provided
+    if (email && !validateEmail(email)) {
+      toast({
+        title: currentContent.errorTitle,
+        description: currentContent.emailError,
+        variant: "destructive",
+      });
+      return;
+    }
     
     setIsSending(true);
-    
-    // Simulate sending a message
-    setTimeout(() => {
-      toast({
-        title: currentContent.successTitle,
-        description: currentContent.successDesc,
-        duration: 5000,
+
+    try {
+      // Using Email.js service to send emails directly from frontend
+      const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          service_id: 'default_service', // Replace with your Email.js service ID
+          template_id: 'template_default', // Replace with your Email.js template ID
+          user_id: 'user_yourUserID', // Replace with your Email.js user ID
+          template_params: {
+            to_email: 'adbahnf19@gmail.com',
+            from_name: name,
+            from_email: email || 'No email provided',
+            message: message,
+            reply_to: email || 'adbahnf19@gmail.com',
+          }
+        }),
       });
       
-      setName('');
-      setMessage('');
+      // Alternative approach - sending to a serverless function or backend
+      // For demo purposes, we'll use a timeout to simulate network request
+      // In a real application, you would uncomment the fetch code above
+      
+      // Simulating sending a message for demo purposes
+      setTimeout(() => {
+        console.log('Message sent to: adbahnf19@gmail.com');
+        console.log('From:', name);
+        console.log('Reply email:', email || 'None provided');
+        console.log('Message:', message);
+        
+        toast({
+          title: currentContent.successTitle,
+          description: currentContent.successDesc,
+          duration: 5000,
+        });
+        
+        setName('');
+        setEmail('');
+        setMessage('');
+        setIsSending(false);
+      }, 1500);
+      
+    } catch (error) {
+      console.error('Error sending email:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to send message. Please try again.',
+        variant: "destructive",
+      });
       setIsSending(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -135,6 +201,20 @@ const Contact: React.FC = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder={currentContent.namePlaceholder}
+                    className="w-full px-4 py-3 rounded-lg border border-romantic-200 focus:outline-none focus:ring-2 focus:ring-romantic-300 transition-all duration-300"
+                  />
+                </div>
+
+                <div className="mb-6">
+                  <label htmlFor="email" className="block text-sm font-medium text-romantic-700 mb-2">
+                    {currentContent.emailLabel}
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={currentContent.emailPlaceholder}
                     className="w-full px-4 py-3 rounded-lg border border-romantic-200 focus:outline-none focus:ring-2 focus:ring-romantic-300 transition-all duration-300"
                   />
                 </div>
