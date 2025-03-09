@@ -19,7 +19,7 @@ const Navigation: React.FC = () => {
         setIsScrolled(false);
       }
 
-      const sections = ['hero', 'gallery', 'messages', 'lovegame', 'contact'];
+      const sections = ['hero', 'gallery', 'messages', 'lovegame', 'virtualgift', 'contact'];
       for (const section of sections) {
         const element = document.getElementById(section);
         if (element) {
@@ -42,6 +42,7 @@ const Navigation: React.FC = () => {
       { name: 'แกลเลอรี่', path: '/#gallery', section: 'gallery' },
       { name: 'ข้อความ', path: '/#messages', section: 'messages' },
       { name: 'เกมแห่งความรัก', path: '/#lovegame', section: 'lovegame' },
+      { name: 'ของขวัญ', path: '/#virtualgift', section: 'virtualgift' },
       { name: 'ติดต่อ', path: '/#contact', section: 'contact' },
     ],
     en: [
@@ -49,6 +50,7 @@ const Navigation: React.FC = () => {
       { name: 'Gallery', path: '/#gallery', section: 'gallery' },
       { name: 'Messages', path: '/#messages', section: 'messages' },
       { name: 'Love Game', path: '/#lovegame', section: 'lovegame' },
+      { name: 'Gifts', path: '/#virtualgift', section: 'virtualgift' },
       { name: 'Contact', path: '/#contact', section: 'contact' },
     ]
   };
