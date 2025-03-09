@@ -6,6 +6,7 @@ import Gallery from '@/components/Gallery';
 import Messages from '@/components/Messages';
 import Surprise from '@/components/Surprise';
 import CocaColaSurprise from '@/components/CocaColaSurprise';
+import LoveGame from '@/components/LoveGame';
 import Contact from '@/components/Contact';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -42,6 +43,9 @@ const Index: React.FC = () => {
         </section>
         <section id="messages">
           <Messages />
+        </section>
+        <section id="lovegame">
+          <LoveGame />
         </section>
         <section id="surprise">
           <Surprise />
