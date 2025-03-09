@@ -1,14 +1,12 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Send, MessageSquareHeart, Upload, X, FileText } from 'lucide-react';
+import { Mail, Send, MessageSquareHeart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Contact: React.FC = () => {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
-  const [files, setFiles] = useState<File[]>([]);
   const [isSending, setIsSending] = useState(false);
   const { toast } = useToast();
   const { language } = useLanguage();
@@ -37,14 +35,7 @@ const Contact: React.FC = () => {
       errorDesc: 'ทั้งชื่อและข้อความจำเป็นต้องกรอก',
       successTitle: 'ส่งข้อความสำเร็จ',
       successDesc: 'ฉันจะอ่านมันพร้อมรอยยิ้มบนใบหน้า',
-      writeSomethingSweet: 'เขียนอะไรซักอย่างที่หวานๆ',
-      addFiles: 'เพิ่มไฟล์',
-      orDrop: 'หรือลากไฟล์มาวางที่นี่',
-      selectedFiles: 'ไฟล์ที่เลือก',
-      removeFile: 'ลบไฟล์',
-      maxSize: 'ขนาดไฟล์ต้องน้อยกว่า 5MB',
-      fileTooLarge: 'ไฟล์ขนาดใหญ่เกินไป',
-      fileType: 'รองรับไฟล์รูปภาพและเอกสาร'
+      writeSomethingSweet: 'เขียนอะไรซักอย่างที่หวานๆ'
     },
     en: {
       badge: 'Write To Me',
@@ -69,73 +60,12 @@ const Contact: React.FC = () => {
       errorDesc: 'Both name and message are required',
       successTitle: 'Message sent successfully',
       successDesc: 'I\'ll read it with a smile on my face',
-      writeSomethingSweet: 'Write Something Sweet',
-      addFiles: 'Add Files',
-      orDrop: 'or drop files here',
-      selectedFiles: 'Selected Files',
-      removeFile: 'Remove file',
-      maxSize: 'Files must be less than 5MB',
-      fileTooLarge: 'File is too large',
-      fileType: 'Image and document files supported'
+      writeSomethingSweet: 'Write Something Sweet'
     }
   };
 
   // Select content based on current language
   const currentContent = language === 'th' ? content.th : content.en;
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files;
-    if (!selectedFiles) return;
-    
-    const newFiles: File[] = [];
-    
-    // Check each file for size (5MB limit)
-    Array.from(selectedFiles).forEach(file => {
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: currentContent.fileTooLarge,
-          description: currentContent.maxSize,
-          variant: "destructive",
-        });
-        return;
-      }
-      newFiles.push(file);
-    });
-    
-    setFiles(prev => [...prev, ...newFiles]);
-  };
-  
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-  
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    
-    const droppedFiles = e.dataTransfer.files;
-    if (!droppedFiles) return;
-    
-    const newFiles: File[] = [];
-    
-    // Check each file for size (5MB limit)
-    Array.from(droppedFiles).forEach(file => {
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: currentContent.fileTooLarge,
-          description: currentContent.maxSize,
-          variant: "destructive",
-        });
-        return;
-      }
-      newFiles.push(file);
-    });
-    
-    setFiles(prev => [...prev, ...newFiles]);
-  };
-  
-  const removeFile = (index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index));
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -151,7 +81,7 @@ const Contact: React.FC = () => {
     
     setIsSending(true);
     
-    // Simulate sending a message with files
+    // Simulate sending a message
     setTimeout(() => {
       toast({
         title: currentContent.successTitle,
@@ -159,10 +89,8 @@ const Contact: React.FC = () => {
         duration: 5000,
       });
       
-      // Clear form
       setName('');
       setMessage('');
-      setFiles([]);
       setIsSending(false);
     }, 1500);
   };
@@ -224,57 +152,6 @@ const Contact: React.FC = () => {
                     className="w-full px-4 py-3 rounded-lg border border-romantic-200 focus:outline-none focus:ring-2 focus:ring-romantic-300 transition-all duration-300 resize-none flex-1"
                   ></textarea>
                 </div>
-                
-                {/* File Upload Section */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-romantic-700 mb-2">
-                    {currentContent.addFiles}
-                  </label>
-                  <div 
-                    className="border-2 border-dashed border-romantic-200 rounded-lg p-4 text-center cursor-pointer hover:border-romantic-400 transition-all duration-300"
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                    onClick={() => document.getElementById('file-upload')?.click()}
-                  >
-                    <Upload className="h-6 w-6 mx-auto mb-2 text-romantic-500" />
-                    <p className="text-romantic-700 mb-1">{currentContent.addFiles}</p>
-                    <p className="text-romantic-500 text-sm">{currentContent.orDrop}</p>
-                    <p className="text-romantic-400 text-xs mt-2">{currentContent.maxSize}</p>
-                    <input
-                      type="file"
-                      id="file-upload"
-                      multiple
-                      onChange={handleFileChange}
-                      className="hidden"
-                      accept="image/*,.pdf,.doc,.docx,.txt"
-                    />
-                  </div>
-                </div>
-                
-                {/* Display selected files */}
-                {files.length > 0 && (
-                  <div className="mb-6">
-                    <p className="text-sm font-medium text-romantic-700 mb-2">{currentContent.selectedFiles}</p>
-                    <div className="space-y-2">
-                      {files.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between rounded-md bg-romantic-50 p-2">
-                          <div className="flex items-center">
-                            <FileText className="h-4 w-4 text-romantic-500 mr-2" />
-                            <span className="text-sm text-romantic-700 truncate max-w-[200px]">{file.name}</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => removeFile(index)}
-                            className="text-romantic-500 hover:text-romantic-700"
-                            aria-label={currentContent.removeFile}
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
                 
                 <button
                   type="submit"

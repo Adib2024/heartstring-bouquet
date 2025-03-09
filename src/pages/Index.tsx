@@ -11,7 +11,6 @@ import VirtualGift from '@/components/VirtualGift';
 import Contact from '@/components/Contact';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Toaster } from '@/components/ui/toaster';
 
 const Index: React.FC = () => {
   const { language } = useLanguage();
@@ -60,7 +59,6 @@ const Index: React.FC = () => {
           <Contact />
         </section>
       </motion.div>
-      <Toaster />
     </Layout>
   );
 };
