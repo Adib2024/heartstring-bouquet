@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Send, MessageSquareHeart } from 'lucide-react';
@@ -72,10 +71,8 @@ const Contact: React.FC = () => {
     }
   };
 
-  // Select content based on current language
   const currentContent = language === 'th' ? content.th : content.en;
 
-  // Email validation function
   const validateEmail = (email: string): boolean => {
     if (!email) return true; // Email is optional
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -94,7 +91,6 @@ const Contact: React.FC = () => {
       return;
     }
 
-    // Validate email if provided
     if (email && !validateEmail(email)) {
       toast({
         title: currentContent.errorTitle,
@@ -107,16 +103,15 @@ const Contact: React.FC = () => {
     setIsSending(true);
 
     try {
-      // Using Email.js service to send emails directly from frontend
       const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          service_id: 'service_euedxns', // Updated service ID
-          template_id: 'template_default', // Replace with your Email.js template ID
-          user_id: 'user_yourUserID', // Replace with your Email.js user ID
+          service_id: 'service_euedxns', 
+          template_id: 'template_kvpt37f', 
+          user_id: 'VeykQiLUX0Ao00vwa', 
           template_params: {
             to_email: 'adbahnf19@gmail.com',
             from_name: name,
@@ -127,17 +122,7 @@ const Contact: React.FC = () => {
         }),
       });
       
-      // Alternative approach - sending to a serverless function or backend
-      // For demo purposes, we'll use a timeout to simulate network request
-      // In a real application, you would uncomment the fetch code above
-      
-      // Simulating sending a message for demo purposes
-      setTimeout(() => {
-        console.log('Message sent to: adbahnf19@gmail.com');
-        console.log('From:', name);
-        console.log('Reply email:', email || 'None provided');
-        console.log('Message:', message);
-        
+      if (response.status === 200) {
         toast({
           title: currentContent.successTitle,
           description: currentContent.successDesc,
@@ -147,9 +132,9 @@ const Contact: React.FC = () => {
         setName('');
         setEmail('');
         setMessage('');
-        setIsSending(false);
-      }, 1500);
-      
+      } else {
+        throw new Error('Failed to send email');
+      }
     } catch (error) {
       console.error('Error sending email:', error);
       toast({
@@ -157,6 +142,7 @@ const Contact: React.FC = () => {
         description: 'Failed to send message. Please try again.',
         variant: "destructive",
       });
+    } finally {
       setIsSending(false);
     }
   };
