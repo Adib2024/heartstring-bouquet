@@ -20,7 +20,7 @@ interface Photo {
 const photos: Photo[] = [
   {
     id: 1,
-    src: '/lovable-uploads/400effcd-ba0d-4daf-a9d9-074cb3b72409.png',
+    src: '/src/components/Gallery/A.jpg',
     alt: {
       th: 'จับมือกัน',
       en: 'Holding hands together'
@@ -32,7 +32,7 @@ const photos: Photo[] = [
   },
   {
     id: 2,
-    src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
+    src: '/src/components/Gallery/B.jpg',
     alt: {
       th: 'ทิวทัศน์ที่สงบเงียบพร้อมภูเขาและน้ำ',
       en: 'Serene landscape with mountains and water'
@@ -44,7 +44,7 @@ const photos: Photo[] = [
   },
   {
     id: 3,
-    src: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07',
+    src: '/src/components/Gallery/C.jpg',
     alt: {
       th: 'ดอกไม้สีส้มสวยงามบาน',
       en: 'Beautiful orange flowers in bloom'
@@ -56,7 +56,7 @@ const photos: Photo[] = [
   },
   {
     id: 4,
-    src: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
+    src: '/src/components/Gallery/D.jpg',
     alt: {
       th: 'ช่วงเวลาที่อบอุ่นทำงานด้วยกัน',
       en: 'Cozy moment working together'
@@ -68,7 +68,7 @@ const photos: Photo[] = [
   },
   {
     id: 5,
-    src: 'https://images.unsplash.com/photo-1721322800607-8c38375eef04',
+    src: '/src/components/Gallery/E.jpg',
     alt: {
       th: 'ห้องนั่งเล่นที่แสนอบอุ่น',
       en: 'A cozy living room'
@@ -80,7 +80,7 @@ const photos: Photo[] = [
   },
   {
     id: 6,
-    src: 'https://images.unsplash.com/photo-1582562124811-c09040d0a901',
+    src: '/src/components/Gallery/F.jpg',
     alt: {
       th: 'เพื่อนตัวน้อยที่น่ารักของเรา',
       en: 'Our furry friend'
