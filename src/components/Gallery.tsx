@@ -22,72 +22,72 @@ const photos: Photo[] = [
     id: 1,
     src: '/src/components/Gallery/A.jpg',
     alt: {
-      th: 'จับมือกัน',
-      en: 'Holding hands together'
+      th: '',
+      en: ''
     },
     caption: {
-      th: 'เมื่อมือของเราประสานกัน ฉันรู้สึกเติมเต็ม',
-      en: 'When our hands intertwine, I feel complete'
+      th: 'ใบหน้าน่ารักๆ ที่ทำให้ฉันยิ้มได้ทุกวัน',
+      en: 'The adorable faces that make me smile every day'
     }
   },
   {
     id: 2,
     src: '/src/components/Gallery/B.jpg',
     alt: {
-      th: 'ทิวทัศน์ที่สงบเงียบพร้อมภูเขาและน้ำ',
-      en: 'Serene landscape with mountains and water'
+      th: '',
+      en: ''
     },
     caption: {
       th: 'สถานที่ที่เราพูดว่า "ฉันรักคุณ" เป็นครั้งแรก',
-      en: 'The place where we first said "I love you"'
+      en: 'Your beautiful big eyes that I can never stop admiring'
     }
   },
   {
     id: 3,
     src: '/src/components/Gallery/C.jpg',
     alt: {
-      th: 'ดอกไม้สีส้มสวยงามบาน',
-      en: 'Beautiful orange flowers in bloom'
+      th: '',
+      en: ''
     },
     caption: {
-      th: 'จำได้ไหมเมื่อคุณทำให้ฉันประหลาดใจด้วยดอกไม้เหล่านี้?',
-      en: 'Remember when you surprised me with these flowers?'
+      th: 'ภาพแรกที่ทำให้ฉันตกหลุมรักเธอ',
+      en: 'The first picture that made me fall for you'
     }
   },
   {
     id: 4,
     src: '/src/components/Gallery/D.jpg',
     alt: {
-      th: 'ช่วงเวลาที่อบอุ่นทำงานด้วยกัน',
-      en: 'Cozy moment working together'
+      th: '',
+      en: ''
     },
     caption: {
-      th: 'ช่วงเวลาเงียบๆ ของเราสำคัญกับฉันมาก',
-      en: 'Our quiet moments mean everything to me'
+      th: 'วันสุดท้ายที่ได้อยู่ด้วยกัน ก่อนที่เราจะได้พบกันอีกครั้ง',
+      en: 'Cherishing our last day together before we meet again'
     }
   },
   {
     id: 5,
     src: '/src/components/Gallery/E.jpg',
     alt: {
-      th: 'ห้องนั่งเล่นที่แสนอบอุ่น',
-      en: 'A cozy living room'
+      th: '',
+      en: ''
     },
     caption: {
-      th: 'สร้างบ้านของเราด้วยกัน ทีละความทรงจำ',
-      en: 'Building our home together, one memory at a time'
+      th: 'มื้อค่ำแสนพิเศษที่ร้านอาหารไทยที่เราชอบ',
+      en: 'A lovely dinner at our favorite Thai restaurant'
     }
   },
   {
     id: 6,
     src: '/src/components/Gallery/F.jpg',
     alt: {
-      th: 'เพื่อนตัวน้อยที่น่ารักของเรา',
-      en: 'Our furry friend'
+      th: '',
+      en: ''
     },
     caption: {
-      th: 'สมาชิกครอบครัวตัวน้อยของเราที่นำความสุขมาให้เรามากมาย',
-      en: 'Our little family member who brings us so much joy'
+      th: 'ฟิลเตอร์น่ารักๆ ที่เธอส่งมา ทำให้หัวใจฉันละลาย',
+      en: 'The cutest filter you sent me – making my heart melt'
     }
   }
 ];
