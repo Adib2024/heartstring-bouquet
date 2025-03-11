@@ -11,13 +11,13 @@ const Surprise: React.FC = () => {
   const { language } = useLanguage();
   
   // This would typically be stored securely, but for simplicity:
-  const correctPassword = 'loveyou';
+  const correctPassword = 'teerak';
 
   const content = {
     th: {
       title: 'เซอร์ไพรส์พิเศษ',
       description: 'ฉันได้เตรียมบางสิ่งพิเศษไว้สำหรับคุณโดยเฉพาะ ใส่รหัสผ่านเพื่อปลดล็อค',
-      hint: '(คำใบ้: คือสามคำที่ฉันบอกคุณเสมอ ไม่มีเว้นวรรค)',
+      hint: '(คำใบ้: เป็นคำที่เธอเรียกฉันตลอด)',
       placeholder: 'ใส่รหัสผ่าน',
       errorMsg: 'รหัสผ่านไม่ถูกต้อง ลองอีกครั้ง!',
       buttonText: 'ปลดล็อคหัวใจของฉัน',
@@ -26,7 +26,7 @@ const Surprise: React.FC = () => {
     en: {
       title: 'A Special Surprise',
       description: 'I\'ve prepared something special just for you. Enter the password to unlock it.',
-      hint: '(Hint: It\'s three words I always tell you, without spaces)',
+      hint: '(Hint: It\'s one words you always call me)',
       placeholder: 'Enter the password',
       errorMsg: 'That\'s not quite right. Try again!',
       buttonText: 'Unlock My Heart',
