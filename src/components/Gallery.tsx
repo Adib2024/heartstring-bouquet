@@ -20,7 +20,7 @@ interface Photo {
 const photos: Photo[] = [
   {
     id: 1,
-    src: '/Gallery/1.jpg',
+    src: '/Gallery/A.jpg',
     alt: {
       th: '',
       en: ''
@@ -32,7 +32,7 @@ const photos: Photo[] = [
   },
   {
     id: 2,
-    src: '/Gallery/2.jpg',
+    src: '/Gallery/B.jpg',
     alt: {
       th: '',
       en: ''
@@ -44,7 +44,7 @@ const photos: Photo[] = [
   },
   {
     id: 3,
-    src: '/Gallery/3.jpg',
+    src: '/Gallery/C.jpg',
     alt: {
       th: '',
       en: ''
@@ -56,7 +56,7 @@ const photos: Photo[] = [
   },
   {
     id: 4,
-    src: '/Gallery/4.jpg',
+    src: '/Gallery/D.jpg',
     alt: {
       th: '',
       en: ''
@@ -68,7 +68,7 @@ const photos: Photo[] = [
   },
   {
     id: 5,
-    src: '/Gallery/5.jpg',
+    src: '/Gallery/E.jpg',
     alt: {
       th: '',
       en: ''
@@ -80,7 +80,7 @@ const photos: Photo[] = [
   },
   {
     id: 6,
-    src: '/Gallery/6.jpg',
+    src: '/Gallery/F.jpg',
     alt: {
       th: '',
       en: ''
